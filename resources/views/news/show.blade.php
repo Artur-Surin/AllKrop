@@ -1,16 +1,11 @@
 @extends('layouts.app')
 
 @php
-    $slug = request()->route('slug');
-    $article = App\Services\ContentService::getNews($slug);
-    if (!$article) abort(404);
-    $allNews = App\Services\ContentService::news();
-    $related = array_values(array_filter($allNews, fn($n) => $n['slug'] !== $slug));
-    $related = array_slice($related, 0, 2);
+    $slug = $item->slug;
 @endphp
 
 @section('meta')
-    <x-meta title="{{ $article['title'] }} — Кропивницький" description="{{ $article['excerpt'] }}" type="article" image="{{ $article['image'] }}" />
+    <x-meta title="{{ $item['title'] }} — Кропивницький" description="{{ $item['excerpt'] }}" type="article" image="{{ $item['image'] }}" />
 @endsection
 
 @section('json-ld')
@@ -18,13 +13,13 @@
     [
         '@context' => 'https://schema.org',
         '@type' => 'NewsArticle',
-        'headline' => $article['title'],
-        'datePublished' => $article['date'],
+        'headline' => $item['title'],
+        'datePublished' => $item['date'],
         'author' => [
             '@type' => 'Organization',
             'name' => 'Кропивницький — міський портал',
         ],
-        'image' => $article['image'] ? asset($article['image']) : null,
+        'image' => $item['image'] ? asset($item['image']) : null,
         'publisher' => [
             '@type' => 'Organization',
             'name' => 'Кропивницький — міський портал',
@@ -37,34 +32,34 @@
 ]" />
 @endsection
 
-@section('pageTitle', $article['title'] . ' — Кропивницький')
-@section('pageDescription', $article['excerpt'])
+@section('pageTitle', $item['title'] . ' — Кропивницький')
+@section('pageDescription', $item['excerpt'])
 
 @section('content')
 <article class="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
-    <x-breadcrumb :items="[['label' => 'Головна', 'href' => '/'], ['label' => 'Новини', 'href' => route('news.index')], ['label' => $article['title']]]" />
+    <x-breadcrumb :items="[['label' => 'Головна', 'href' => '/'], ['label' => 'Новини', 'href' => route('news.index')], ['label' => $item['title']]]" />
 
     <div class="mt-6 flex items-center gap-2">
-        <span class="inline-block rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground">{{ $article['tag'] }}</span>
-        @if(!empty($article['source']))
-            <span class="inline-block rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">Джерело: {{ $article['source'] }}</span>
+        <span class="inline-block rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground">{{ $item['tag'] }}</span>
+        @if(!empty($item['source']))
+            <span class="inline-block rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">Джерело: {{ $item['source'] }}</span>
         @endif
     </div>
-    <h1 class="mt-4 text-balance font-serif text-3xl font-bold leading-tight tracking-tight sm:text-4xl">{{ $article['title'] }}</h1>
+    <h1 class="mt-4 text-balance font-serif text-3xl font-bold leading-tight tracking-tight sm:text-4xl">{{ $item['title'] }}</h1>
     <div class="mt-4 flex items-center gap-4 text-sm text-muted-foreground">
-        <span>{{ $article['date'] }}</span>
+        <span>{{ $item['date'] }}</span>
         <span class="flex items-center gap-1">
             <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-            {{ $article['read'] }} читання
+            {{ $item['read'] }} читання
         </span>
     </div>
 
     <div class="mt-8 overflow-hidden rounded-3xl border border-border">
-        <img src="{{ $article['image'] }}" alt="{{ $article['title'] }}" class="aspect-[16/9] w-full object-cover" loading="lazy" decoding="async">
+        <img src="{{ $item['image'] }}" alt="{{ $item['title'] }}" class="aspect-[16/9] w-full object-cover" loading="lazy" decoding="async">
     </div>
 
     <div class="mt-8 space-y-5 text-lg leading-relaxed text-foreground/90">
-        @foreach($article['body'] as $paragraph)
+        @foreach($item['body'] as $paragraph)
             <p class="text-pretty">{{ $paragraph }}</p>
         @endforeach
     </div>
