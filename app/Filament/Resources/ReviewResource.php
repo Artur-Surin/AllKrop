@@ -11,6 +11,7 @@ use Filament\Forms;
 use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Actions;
 use Filament\Tables\Table;
 use Filament\Support\Icons\Heroicon;
 
@@ -106,9 +107,9 @@ class ReviewResource extends Resource
                     ]),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                Tables\Actions\Action::make('approve')
+                Actions\EditAction::make(),
+                Actions\DeleteAction::make(),
+                Actions\Action::make('approve')
                     ->label('Схвалити')
                     ->icon('heroicon-o-check')
                     ->color('success')
@@ -116,8 +117,8 @@ class ReviewResource extends Resource
                     ->action(fn ($record) => $record->update(['is_approved' => true])),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }
