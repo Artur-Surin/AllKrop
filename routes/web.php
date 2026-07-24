@@ -30,6 +30,7 @@ Route::get('/city/{slug}', [CityController::class, 'show'])->name('city.show');
 
 Route::get('/contacts', [ContactController::class, 'index'])->name('contacts');
 Route::get('/services', [ServiceController::class, 'index'])->name('services');
+Route::get('/transport/{number}', [TransportController::class, 'show'])->name('transport.show');
 Route::get('/transport', [TransportController::class, 'index'])->name('transport');
 
 Route::get('/sitemap.xml', function () {
