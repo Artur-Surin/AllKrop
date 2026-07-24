@@ -33,7 +33,7 @@
 @endphp
 
 @section('meta')
-    <x-meta title="Маршрут №{{ $route['number'] }} — Транспорт — Кропивницький" description="Маршрут №{{ $route['number'] }} {{ $route['type'] }}: {{ $route['from'] }} — {{ $route['to'] }}" />
+    <x-meta title="Маршрут №{{ $route['number'] }} — Транспорт — Кропивницький" description="Маршрут №{{ $route['number'] }} {{ $route['type'] }}: {{ $route['from'] }} — {{ $route['to'] }}" image="/images/hero-city.png" />
 @endsection
 
 @section('pageTitle', 'Маршрут №' . $route['number'] . ' — Транспорт — Кропивницький')
@@ -41,12 +41,7 @@
 
 @section('content')
 <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
-    <div class="flex flex-wrap items-center gap-3 text-sm">
-        <a href="{{ route('transport') }}" class="inline-flex items-center gap-1.5 font-medium text-muted-foreground transition-colors hover:text-foreground">
-            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5M12 19l-7-7 7-7"/></svg>
-            Транспорт
-        </a>
-    </div>
+    <x-breadcrumb :items="[['label' => 'Головна', 'href' => '/'], ['label' => 'Транспорт', 'href' => route('transport')], ['label' => 'Маршрут №' . $route['number']]]" />
 
     <div class="mt-8 flex flex-col gap-8 lg:flex-row lg:items-start">
         <div class="flex-1">

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('meta')
-    <x-meta title="{{ $service['title'] }} — Послуги — Кропивницький" description="{{ $service['description'] }}" />
+    <x-meta title="{{ $service['title'] }} — Послуги — Кропивницький" description="{{ $service['description'] }}" image="/images/hero-city.png" />
 @endsection
 
 @section('pageTitle', $service['title'] . ' — Послуги')
@@ -10,13 +10,7 @@
 @section('content')
 <section class="border-b border-border bg-secondary/40">
     <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
-        <nav aria-label="Хлібні крихти" class="flex items-center gap-1.5 text-sm text-muted-foreground">
-            <a href="/" class="transition-colors hover:text-foreground">Головна</a>
-            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-            <a href="{{ route('services') }}" class="transition-colors hover:text-foreground">Послуги</a>
-            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-            <span class="text-foreground">{{ $service['title'] }}</span>
-        </nav>
+        <x-breadcrumb :items="[['label' => 'Головна', 'href' => '/'], ['label' => 'Послуги', 'href' => route('services')], ['label' => $service['title']]]" />
 
         <div class="mt-8 flex items-start gap-4">
             <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">

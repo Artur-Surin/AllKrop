@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('meta')
-    <x-meta title="Пошук — Кропивницький" description="Пошук новин, подій, закладів та інформації про місто Кропивницький" :noIndex="true" />
+    <x-meta title="Пошук — Кропивницький" description="Пошук новин, подій, закладів та інформації про місто Кропивницький" :noIndex="true" image="/images/hero-city.png" />
 @endsection
 
 @section('pageTitle', 'Пошук — Кропивницький')
@@ -11,11 +11,7 @@
     {{-- Page Header --}}
     <section class="border-b border-border bg-secondary/40">
         <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
-            <nav aria-label="Хлібні крихти" class="flex items-center gap-1.5 text-sm text-muted-foreground">
-                <a href="/" class="transition-colors hover:text-foreground">Головна</a>
-                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                <span class="text-foreground">Пошук</span>
-            </nav>
+            <x-breadcrumb :items="[['label' => 'Головна', 'href' => '/'], ['label' => 'Пошук']]" />
 
             <p class="mt-6 text-sm font-medium text-primary">Пошук по порталу</p>
             <h1 class="mt-2 text-balance font-serif text-4xl font-bold tracking-tight sm:text-5xl">

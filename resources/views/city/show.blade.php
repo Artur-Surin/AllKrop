@@ -7,7 +7,7 @@
 @endphp
 
 @section('meta')
-    <x-meta title="{{ $landmark['title'] }} — Кропивницький" description="{{ $landmark['description'] }}" />
+    <x-meta title="{{ $landmark['title'] }} — Кропивницький" description="{{ $landmark['description'] }}" image="{{ $landmark['image'] }}" />
 @endsection
 
 @section('pageTitle', $landmark['title'] . ' — Кропивницький')
@@ -15,10 +15,7 @@
 
 @section('content')
 <article class="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
-    <a href="{{ route('city.index') }}" class="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        Про місто
-    </a>
+    <x-breadcrumb :items="[['label' => 'Головна', 'href' => '/'], ['label' => 'Про місто', 'href' => route('city.index')], ['label' => $landmark['title']]]" />
 
     <div class="mt-6">
         @if(isset($landmark['category']) && $landmark['category'])

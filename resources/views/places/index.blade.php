@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('meta')
-    <x-meta title="Каталог підприємств — Кропивницький" description="Повний каталог підприємств міста" />
+    <x-meta title="Каталог підприємств — Кропивницький" description="Повний каталог підприємств міста" image="/images/hero-city.png" />
 @endsection
 
 @section('pageTitle', 'Каталог підприємств — Кропивницький')
@@ -10,15 +10,7 @@
 @section('content')
 <section class="border-b border-border bg-secondary/40">
     <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
-        <nav aria-label="Хлібні крихти" class="flex items-center gap-1.5 text-sm text-muted-foreground">
-            <span class="flex items-center gap-1.5">
-                <a href="/" class="transition-colors hover:text-foreground">Головна</a>
-            </span>
-            <span class="flex items-center gap-1.5">
-                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                <span class="text-foreground">Заклади</span>
-            </span>
-        </nav>
+        <x-breadcrumb :items="[['label' => 'Головна', 'href' => '/'], ['label' => 'Заклади']]" />
         <p class="mt-6 text-sm font-medium text-primary">Каталог підприємств</p>
         <h1 class="mt-2 text-balance font-serif text-4xl font-bold tracking-tight sm:text-5xl">Усі підприємства міста</h1>
         <p class="mt-4 max-w-2xl text-pretty text-lg leading-relaxed text-muted-foreground">Єдиний довідник закладів та компаній Кропивницького — обирайте категорію або шукайте потрібне підприємство за назвою.</p>
@@ -27,7 +19,6 @@
 
 @php
     $categories = App\Services\ContentService::enterpriseCategories();
-    $allPlaces = App\Services\ContentService::places();
 @endphp
 
 <section class="border-b border-border bg-secondary/40">
@@ -79,35 +70,34 @@
                 <button data-filter="{{ $cat['key'] }}" class="filter-btn rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">{{ $cat['label'] }}</button>
             @endforeach
         </div>
-
-        <div class="relative lg:w-72 lg:shrink-0">
-            <svg class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-            <input type="text" id="places-search" placeholder="Пошук підприємства…" aria-label="Пошук підприємства" class="w-full rounded-full border border-border bg-card py-2.5 pl-10 pr-4 text-sm text-foreground outline-none transition-colors focus:border-primary">
-        </div>
     </div>
 
-    <p class="mt-6 text-sm text-muted-foreground">Знайдено підприємств: <span class="font-semibold text-foreground" id="places-count">{{ count($allPlaces) }}</span></p>
+    <p class="mt-6 text-sm text-muted-foreground">Знайдено підприємств: <span class="font-semibold text-foreground" id="places-count">{{ $places->total() }}</span></p>
 
     <div class="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3" id="places-grid">
-        @foreach($allPlaces as $place)
-            <a href="{{ route('places.show', $place['slug']) }}" data-category="{{ $place['categoryKey'] }}" data-name="{{ mb_strtolower($place['name']) }}" class="place-card group overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-primary/40">
+        @foreach($places as $place)
+            <a href="{{ route('places.show', $place->slug) }}" data-category="{{ $place->category?->key ?? '' }}" data-name="{{ mb_strtolower($place->name) }}" class="place-card group overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-primary/40">
                 <div class="relative aspect-[16/10] overflow-hidden">
-                    <img src="{{ $place['image'] }}" alt="{{ $place['name'] }}" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" decoding="async">
+                    <img src="{{ $place->image }}" alt="{{ $place->name }}" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" decoding="async">
                     <span class="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-background/90 px-2.5 py-1 text-xs font-semibold backdrop-blur">
                         <svg class="h-3.5 w-3.5 fill-accent text-accent" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                        {{ $place['rating'] }}
+                        {{ $place->rating }}
                     </span>
                 </div>
                 <div class="p-5">
-                    <p class="text-xs font-medium text-primary">{{ $place['category'] }}</p>
-                    <h3 class="mt-1.5 font-serif text-lg font-semibold">{{ $place['name'] }}</h3>
+                    <p class="text-xs font-medium text-primary">{{ $place->category->label ?? '' }}</p>
+                    <h3 class="mt-1.5 font-serif text-lg font-semibold">{{ $place->name }}</h3>
                     <p class="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground">
                         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                        {{ $place['area'] }}
+                        {{ $place->area }}
                     </p>
                 </div>
             </a>
         @endforeach
+    </div>
+
+    <div class="mt-10">
+        {{ $places->links() }}
     </div>
 </div>
 @endsection
@@ -115,21 +105,16 @@
 @section('scripts')
 <script>
     const filterBtns = document.querySelectorAll('#filter-buttons .filter-btn');
-    const searchInput = document.getElementById('places-search');
     const grid = document.getElementById('places-grid');
     const countEl = document.getElementById('places-count');
     let activeFilter = 'all';
 
     function filterPlaces() {
-        const query = searchInput.value.toLowerCase().trim();
         const cards = grid.querySelectorAll('.place-card');
         let visible = 0;
         cards.forEach(card => {
             const cat = card.dataset.category;
-            const name = card.dataset.name;
-            const matchesFilter = activeFilter === 'all' || cat === activeFilter;
-            const matchesSearch = !query || name.includes(query);
-            const show = matchesFilter && matchesSearch;
+            const show = activeFilter === 'all' || cat === activeFilter;
             card.style.display = show ? '' : 'none';
             if (show) visible++;
         });
@@ -148,7 +133,5 @@
             filterPlaces();
         });
     });
-
-    searchInput.addEventListener('input', filterPlaces);
 </script>
 @endsection

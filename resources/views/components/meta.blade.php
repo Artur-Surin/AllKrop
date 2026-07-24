@@ -10,6 +10,7 @@
 @php
     $url = $url ?? request()->url();
     $siteName = 'Кропивницький — міський портал';
+    $ogImage = $image ?? '/images/hero-city.png';
 @endphp
 
 <title>{{ $title }}</title>
@@ -25,14 +26,10 @@
 <meta property="og:url" content="{{ $url }}">
 <meta property="og:type" content="{{ $type }}">
 <meta property="og:site_name" content="{{ $siteName }}">
-@if($image)
-    <meta property="og:image" content="{{ $image }}">
-@endif
+<meta property="og:image" content="{{ $ogImage }}">
 
 {{-- Twitter Card --}}
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{ $title }}">
 <meta name="twitter:description" content="{{ $description }}">
-@if($image)
-    <meta name="twitter:image" content="{{ $image }}">
-@endif
+<meta name="twitter:image" content="{{ $ogImage }}">

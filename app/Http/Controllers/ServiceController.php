@@ -1,12 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Services\ContentService;
+use Illuminate\View\View;
 
 class ServiceController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         $serviceGroups = ContentService::serviceGroups();
         $categories = ContentService::serviceCategories();
@@ -15,7 +18,7 @@ class ServiceController extends Controller
         return view('services.index', compact('serviceGroups', 'categories', 'offices'));
     }
 
-    public function show(string $slug)
+    public function show(string $slug): View
     {
         $service = ContentService::getServiceBySlug($slug);
 

@@ -1,13 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\Landmark;
 use App\Services\ContentService;
+use Illuminate\View\View;
 
 class CityController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         $landmarks = Landmark::all();
         $stats = ContentService::stats();
@@ -15,9 +18,9 @@ class CityController extends Controller
         return view('city.index', compact('landmarks', 'stats'));
     }
 
-    public function show($slug)
+    public function show(Landmark $landmark): View
     {
-        $item = Landmark::where('slug', $slug)->firstOrFail();
+        $item = $landmark;
 
         return view('city.show', compact('item'));
     }

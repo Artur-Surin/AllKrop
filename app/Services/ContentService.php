@@ -1,33 +1,40 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Models\News as NewsModel;
 use App\Models\Event as EventModel;
+use Illuminate\Support\Facades\Cache;
 
 class ContentService
 {
     public static function navLinks(): array
     {
-        return [
-            ['label' => 'Новини', 'href' => '/news'],
-            ['label' => 'Афіша', 'href' => '/events'],
-            ['label' => 'Заклади', 'href' => '/places'],
-            ['label' => 'Послуги', 'href' => '/services'],
-            ['label' => 'Транспорт', 'href' => '/transport'],
-            ['label' => 'Місто', 'href' => '/city'],
-            ['label' => 'Контакти', 'href' => '/contacts'],
-        ];
+        return Cache::remember('navLinks', 3600, function () {
+            return [
+                ['label' => 'Новини', 'href' => '/news'],
+                ['label' => 'Афіша', 'href' => '/events'],
+                ['label' => 'Заклади', 'href' => '/places'],
+                ['label' => 'Послуги', 'href' => '/services'],
+                ['label' => 'Транспорт', 'href' => '/transport'],
+                ['label' => 'Місто', 'href' => '/city'],
+                ['label' => 'Контакти', 'href' => '/contacts'],
+            ];
+        });
     }
 
     public static function stats(): array
     {
-        return [
-            ['value' => '272', 'label' => 'роки історії міста'],
-            ['value' => '215K+', 'label' => 'мешканців'],
-            ['value' => '115', 'label' => 'км² площа міста'],
-            ['value' => '40+', 'label' => 'подій щомісяця'],
-        ];
+        return Cache::remember('stats', 3600, function () {
+            return [
+                ['value' => '272', 'label' => 'роки історії міста'],
+                ['value' => '215K+', 'label' => 'мешканців'],
+                ['value' => '115', 'label' => 'км² площа міста'],
+                ['value' => '40+', 'label' => 'подій щомісяця'],
+            ];
+        });
     }
 
     public static function news(): array
@@ -339,16 +346,18 @@ class ContentService
 
     public static function enterpriseCategories(): array
     {
-        return [
-            ['key' => 'food', 'label' => 'Кафе та ресторани', 'icon' => 'UtensilsCrossed', 'description' => 'Кав\'ярні, ресторани, піцерії та заклади вуличної їжі міста.'],
-            ['key' => 'shops', 'label' => 'Магазини та торгівля', 'icon' => 'ShoppingBag', 'description' => 'Торгові центри, книгарні, супермаркети та фірмові магазини.'],
-            ['key' => 'culture', 'label' => 'Культура та дозвілля', 'icon' => 'Drama', 'description' => 'Театри, галереї, кінотеатри та концертні майданчики.'],
-            ['key' => 'beauty', 'label' => 'Краса та здоров\'я', 'icon' => 'HeartPulse', 'description' => 'Салони краси, спа, стоматології та медичні центри.'],
-            ['key' => 'education', 'label' => 'Освіта', 'icon' => 'GraduationCap', 'description' => 'Університети, школи, курси та дитячі розвиткові центри.'],
-            ['key' => 'auto', 'label' => 'Авто та сервіс', 'icon' => 'Car', 'description' => 'Автосервіси, СТО, автомийки та шиномонтаж.'],
-            ['key' => 'finance', 'label' => 'Фінанси та послуги', 'icon' => 'Briefcase', 'description' => 'Бізнес-центри, юридичні та фінансові компанії.'],
-            ['key' => 'industry', 'label' => 'Промисловість', 'icon' => 'Factory', 'description' => 'Виробничі підприємства, фабрики та заводи міста.'],
-        ];
+        return Cache::remember('enterpriseCategories', 3600, function () {
+            return [
+                ['key' => 'food', 'label' => 'Кафе та ресторани', 'icon' => 'UtensilsCrossed', 'description' => 'Кав\'ярні, ресторани, піцерії та заклади вуличної їжі міста.'],
+                ['key' => 'shops', 'label' => 'Магазини та торгівля', 'icon' => 'ShoppingBag', 'description' => 'Торгові центри, книгарні, супермаркети та фірмові магазини.'],
+                ['key' => 'culture', 'label' => 'Культура та дозвілля', 'icon' => 'Drama', 'description' => 'Театри, галереї, кінотеатри та концертні майданчики.'],
+                ['key' => 'beauty', 'label' => 'Краса та здоров\'я', 'icon' => 'HeartPulse', 'description' => 'Салони краси, спа, стоматології та медичні центри.'],
+                ['key' => 'education', 'label' => 'Освіта', 'icon' => 'GraduationCap', 'description' => 'Університети, школи, курси та дитячі розвиткові центри.'],
+                ['key' => 'auto', 'label' => 'Авто та сервіс', 'icon' => 'Car', 'description' => 'Автосервіси, СТО, автомийки та шиномонтаж.'],
+                ['key' => 'finance', 'label' => 'Фінанси та послуги', 'icon' => 'Briefcase', 'description' => 'Бізнес-центри, юридичні та фінансові компанії.'],
+                ['key' => 'industry', 'label' => 'Промисловість', 'icon' => 'Factory', 'description' => 'Виробничі підприємства, фабрики та заводи міста.'],
+            ];
+        });
     }
 
     public static function getCategory(string $key): ?array
@@ -900,11 +909,13 @@ class ContentService
 
     public static function transportInfo(): array
     {
-        return [
-            ['icon' => 'CreditCard', 'title' => 'Електронний квиток', 'text' => 'Оплачуйте проїзд банківською карткою або через мобільний застосунок.'],
-            ['icon' => 'MapPin', 'title' => 'Відстеження онлайн', 'text' => 'Дивіться рух транспорту в реальному часі.'],
-            ['icon' => 'Accessibility', 'title' => 'Доступність', 'text' => 'Низькопідлогові електробуси обладнані для маломобільних пасажирів.'],
-            ['icon' => 'Bike', 'title' => 'Велоінфраструктура', 'text' => 'Мережа велодоріжок та муніципальний велопрокат.'],
-        ];
+        return Cache::remember('transportInfo', 3600, function () {
+            return [
+                ['icon' => 'CreditCard', 'title' => 'Електронний квиток', 'text' => 'Оплачуйте проїзд банківською карткою або через мобільний застосунок.'],
+                ['icon' => 'MapPin', 'title' => 'Відстеження онлайн', 'text' => 'Дивіться рух транспорту в реальному часі.'],
+                ['icon' => 'Accessibility', 'title' => 'Доступність', 'text' => 'Низькопідлогові електробуси обладнані для маломобільних пасажирів.'],
+                ['icon' => 'Bike', 'title' => 'Велоінфраструктура', 'text' => 'Мережа велодоріжок та муніципальний велопрокат.'],
+            ];
+        });
     }
 }

@@ -1,7 +1,8 @@
 @extends('layouts.app')
 
-@section('pageTitle', 'Сторінку не знайдено — 404 — Кропивницький')
-@section('pageDescription', 'Сторінку не знайдено. Перейдіть на головну сторінку порталу.')
+@section('meta')
+    <x-meta title="Сторінку не знайдено — Кропивницький" description="Сторінку не знайдено" />
+@endsection
 
 @section('content')
 <section class="mx-auto flex max-w-2xl flex-col items-center px-4 py-24 text-center sm:px-6 sm:py-32">

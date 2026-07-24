@@ -9,7 +9,38 @@
 @endphp
 
 @section('meta')
-    <x-meta title="{{ $place->name }} — Кропивницький" description="{{ $place->description[0] ?? $place->name }}" />
+    <x-meta title="{{ $place->name }} — Кропивницький" description="{{ $place->description[0] ?? $place->name }}" image="{{ $place->image }}" />
+@endsection
+
+@section('json-ld')
+@php
+    $schemas = [
+        [
+            '@context' => 'https://schema.org',
+            '@type' => 'LocalBusiness',
+            'name' => $place->name,
+            'address' => [
+                '@type' => 'PostalAddress',
+                'streetAddress' => $place->address,
+                'addressLocality' => 'Кропивницький',
+                'addressCountry' => 'UA',
+            ],
+            'telephone' => $place->phone,
+            'openingHours' => $place->hours,
+            'image' => $place->image ? asset($place->image) : null,
+        ],
+    ];
+    if ($reviewsCount > 0) {
+        $schemas[0]['aggregateRating'] = [
+            '@type' => 'AggregateRating',
+            'ratingValue' => $avgRating,
+            'reviewCount' => $reviewsCount,
+            'bestRating' => 5,
+            'worstRating' => 1,
+        ];
+    }
+@endphp
+<x-json-ld :schemas="$schemas" />
 @endsection
 
 @section('pageTitle', $place->name . ' — Кропивницький')
@@ -17,16 +48,12 @@
 
 @section('content')
 <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
-    <div class="flex flex-wrap items-center gap-3 text-sm">
-        <a href="{{ route('places.index') }}" class="inline-flex items-center gap-1.5 font-medium text-muted-foreground transition-colors hover:text-foreground">
-            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5M12 19l-7-7 7-7"/></svg>
-            Каталог
-        </a>
-        @if($category)
-            <span class="text-muted-foreground/50" aria-hidden="true">/</span>
-            <a href="{{ route('places.category', $category->key) }}" class="font-medium text-muted-foreground transition-colors hover:text-foreground">{{ $category->label }}</a>
-        @endif
-    </div>
+    <x-breadcrumb :items="[
+        ['label' => 'Головна', 'href' => '/'],
+        ['label' => 'Каталог', 'href' => route('places.index')],
+        $category ? ['label' => $category->label, 'href' => route('places.category', $category->key)] : null,
+        ['label' => $place->name],
+    ]" />
 
     <div class="mt-8 grid gap-10 lg:grid-cols-[1.5fr_1fr]">
         <div>
@@ -103,7 +130,7 @@
         {{-- Форма відгуку --}}
         <div class="mt-8 rounded-2xl border border-border bg-card p-6 sm:p-8">
             <h3 class="font-serif text-lg font-semibold">Залишити відгук</h3>
-            <form id="review-form" class="mt-4 space-y-4" onsubmit="return submitReview(event)">
+            <form id="review-form" class="mt-4 space-y-4">
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div>
                         <label for="review-name" class="text-sm font-medium">Ім'я</label>
@@ -113,7 +140,7 @@
                         <label class="text-sm font-medium">Оцінка</label>
                         <div class="mt-1.5 flex gap-1" id="rating-stars">
                             @for($i = 1; $i <= 5; $i++)
-                                <button type="button" data-rating="{{ $i }}" class="star-btn h-10 w-10 rounded-lg border border-border text-2xl transition-colors hover:bg-secondary" onclick="setRating({{ $i }})">
+                                <button type="button" data-rating="{{ $i }}" class="star-btn h-10 w-10 rounded-lg border border-border text-2xl transition-colors hover:bg-secondary">
                                     ☆
                                 </button>
                             @endfor
@@ -169,34 +196,40 @@
 
 @section('scripts')
 <script>
-    let selectedRating = 0;
+    document.addEventListener('DOMContentLoaded', function() {
+        let selectedRating = 0;
 
-    function setRating(rating) {
-        selectedRating = rating;
-        document.getElementById('rating-input').value = rating;
-        document.querySelectorAll('.star-btn').forEach((btn, i) => {
-            btn.textContent = i < rating ? '★' : '☆';
-            btn.classList.toggle('bg-accent/20', i < rating);
-            btn.classList.toggle('text-accent', i < rating);
-        });
-    }
-
-    async function submitReview(e) {
-        e.preventDefault();
-        if (selectedRating === 0) {
-            alert('Будь ласка, оберіть оцінку');
-            return false;
+        function setRating(rating) {
+            selectedRating = rating;
+            document.getElementById('rating-input').value = rating;
+            document.querySelectorAll('.star-btn').forEach(function(btn, i) {
+                btn.textContent = i < rating ? '★' : '☆';
+                btn.classList.toggle('bg-accent/20', i < rating);
+                btn.classList.toggle('text-accent', i < rating);
+            });
         }
 
-        const name = document.getElementById('review-name').value;
-        const comment = document.getElementById('review-comment').value;
+        document.querySelectorAll('.star-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                setRating(parseInt(btn.dataset.rating, 10));
+            });
+        });
 
-        try {
-            const response = await fetch('{{ route("reviews.store", $place->id) }}', {
+        document.getElementById('review-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (selectedRating === 0) {
+                alert('Будь ласка, оберіть оцінку');
+                return;
+            }
+
+            var name = document.getElementById('review-name').value;
+            var comment = document.getElementById('review-comment').value;
+
+            fetch('{{ route("reviews.store", $place->id) }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                     'Accept': 'application/json',
                 },
                 body: JSON.stringify({
@@ -204,16 +237,15 @@
                     rating: selectedRating,
                     comment: comment,
                 }),
+            }).then(function(response) {
+                if (response.ok) {
+                    document.getElementById('review-form').classList.add('hidden');
+                    document.getElementById('review-success').classList.remove('hidden');
+                }
+            }).catch(function() {
+                alert('Помилка надсилання. Спробуйте ще раз.');
             });
-
-            if (response.ok) {
-                document.getElementById('review-form').classList.add('hidden');
-                document.getElementById('review-success').classList.remove('hidden');
-            }
-        } catch (err) {
-            alert('Помилка надсилання. Спробуйте ще раз.');
-        }
-        return false;
-    }
+        });
+    });
 </script>
 @endsection

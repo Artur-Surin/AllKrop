@@ -1,7 +1,36 @@
 @extends('layouts.app')
 
 @section('meta')
-    <x-meta title="Кропивницький — міський портал" description="Все про місто Кропивницький: новини, афіша подій, довідник закладів та туристичний гід." />
+    <x-meta title="Кропивницький — міський портал" description="Все про місто Кропивницький: новини, афіша подій, довідник закладів та туристичний гід." image="/images/hero-city.png" />
+@endsection
+
+@section('json-ld')
+<x-json-ld :schemas="[
+    [
+        '@context' => 'https://schema.org',
+        '@type' => 'WebSite',
+        'name' => 'Кропивницький — міський портал',
+        'url' => url('/'),
+        'potentialAction' => [
+            '@type' => 'SearchAction',
+            'target' => url('/search') . '?q={search_term_string}',
+            'query-input' => 'required name=search_term_string',
+        ],
+    ],
+    [
+        '@context' => 'https://schema.org',
+        '@type' => 'Organization',
+        'name' => 'Кропивницький — міський портал',
+        'url' => url('/'),
+        'logo' => url('/images/hero-city.png'),
+        'address' => [
+            '@type' => 'PostalAddress',
+            'streetAddress' => 'вул. Велика Перспективна, 41',
+            'addressLocality' => 'Кропивницький',
+            'addressCountry' => 'UA',
+        ],
+    ],
+]" />
 @endsection
 
 @section('pageTitle', 'Кропивницький — міський портал')

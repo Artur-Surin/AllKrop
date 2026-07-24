@@ -10,7 +10,31 @@
 @endphp
 
 @section('meta')
-    <x-meta title="{{ $article['title'] }} — Кропивницький" description="{{ $article['excerpt'] }}" type="article" />
+    <x-meta title="{{ $article['title'] }} — Кропивницький" description="{{ $article['excerpt'] }}" type="article" image="{{ $article['image'] }}" />
+@endsection
+
+@section('json-ld')
+<x-json-ld :schemas="[
+    [
+        '@context' => 'https://schema.org',
+        '@type' => 'NewsArticle',
+        'headline' => $article['title'],
+        'datePublished' => $article['date'],
+        'author' => [
+            '@type' => 'Organization',
+            'name' => 'Кропивницький — міський портал',
+        ],
+        'image' => $article['image'] ? asset($article['image']) : null,
+        'publisher' => [
+            '@type' => 'Organization',
+            'name' => 'Кропивницький — міський портал',
+            'logo' => [
+                '@type' => 'ImageObject',
+                'url' => asset('/images/hero-city.png'),
+            ],
+        ],
+    ],
+]" />
 @endsection
 
 @section('pageTitle', $article['title'] . ' — Кропивницький')
@@ -18,10 +42,7 @@
 
 @section('content')
 <article class="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
-    <a href="{{ route('news.index') }}" class="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        Усі новини
-    </a>
+    <x-breadcrumb :items="[['label' => 'Головна', 'href' => '/'], ['label' => 'Новини', 'href' => route('news.index')], ['label' => $article['title']]]" />
 
     <div class="mt-6 flex items-center gap-2">
         <span class="inline-block rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground">{{ $article['tag'] }}</span>

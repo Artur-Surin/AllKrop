@@ -7,7 +7,34 @@
 @endphp
 
 @section('meta')
-    <x-meta title="{{ $event['title'] }} — Афіша Кропивницького" description="{{ $event['description'][0] ?? '' }}" type="event" />
+    <x-meta title="{{ $event['title'] }} — Афіша Кропивницького" description="{{ $event['description'][0] ?? '' }}" type="event" image="{{ $event['image'] }}" />
+@endsection
+
+@section('json-ld')
+<x-json-ld :schemas="[
+    [
+        '@context' => 'https://schema.org',
+        '@type' => 'Event',
+        'name' => $event['title'],
+        'startDate' => $event['date'] . 'T' . ($event['time'] ?? '00:00'),
+        'location' => [
+            '@type' => 'Place',
+            'name' => $event['place'] ?? 'Кропивницький',
+            'address' => [
+                '@type' => 'PostalAddress',
+                'addressLocality' => 'Кропивницький',
+                'addressCountry' => 'UA',
+            ],
+        ],
+        'offers' => [
+            '@type' => 'Offer',
+            'price' => $event['price'] ?? '0',
+            'priceCurrency' => 'UAH',
+            'availability' => 'https://schema.org/InStock',
+        ],
+        'image' => $event['image'] ? asset($event['image']) : null,
+    ],
+]" />
 @endsection
 
 @section('pageTitle', $event['title'] . ' — Афіша Кропивницького')
@@ -39,10 +66,8 @@
 </section>
 
 <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
-    <a href="{{ route('events.index') }}" class="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        Уся афіша
-    </a>
+    <x-breadcrumb :items="[['label' => 'Головна', 'href' => '/'], ['label' => 'Афіша', 'href' => route('events.index')], ['label' => $event['title']]]" />
+
 
     <div class="mt-8 grid gap-10 lg:grid-cols-[1.6fr_1fr]">
         <div class="space-y-5 text-lg leading-relaxed text-foreground/90">

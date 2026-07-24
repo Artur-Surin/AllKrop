@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('meta')
-    <x-meta title="Контакти — Кропивницький" description="Зв'яжіться з редакцією міського порталу" />
+    <x-meta title="Контакти — Кропивницький" description="Зв'яжіться з редакцією міського порталу" image="/images/hero-city.png" />
 @endsection
 
 @section('pageTitle', 'Контакти — Кропивницький')
@@ -10,15 +10,7 @@
 @section('content')
 <section class="border-b border-border bg-secondary/40">
     <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
-        <nav aria-label="Хлібні крихти" class="flex items-center gap-1.5 text-sm text-muted-foreground">
-            <span class="flex items-center gap-1.5">
-                <a href="/" class="transition-colors hover:text-foreground">Головна</a>
-            </span>
-            <span class="flex items-center gap-1.5">
-                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                <span class="text-foreground">Контакти</span>
-            </span>
-        </nav>
+        <x-breadcrumb :items="[['label' => 'Головна', 'href' => '/'], ['label' => 'Контакти']]" />
         <p class="mt-6 text-sm font-medium text-primary">Контакти</p>
         <h1 class="mt-2 text-balance font-serif text-4xl font-bold tracking-tight sm:text-5xl">Зв'яжіться з нами</h1>
         <p class="mt-4 max-w-2xl text-pretty text-lg leading-relaxed text-muted-foreground">Маєте новину, пропозицію чи хочете додати заклад до довідника? Напишіть редакції міського порталу.</p>

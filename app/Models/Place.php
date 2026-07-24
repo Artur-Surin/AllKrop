@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,6 +14,11 @@ class Place extends Model
     use HasFactory;
 
     protected $fillable = ['slug', 'image', 'name', 'category_id', 'rating', 'area', 'address', 'hours', 'phone', 'description'];
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
 
     protected $casts = [
         'description' => 'array',

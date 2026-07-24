@@ -1,13 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\TransportRoute;
 use App\Services\ContentService;
+use Illuminate\View\View;
 
 class TransportController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         $routes = TransportRoute::all();
         $info = ContentService::transportInfo();
@@ -15,7 +18,7 @@ class TransportController extends Controller
         return view('transport', compact('routes', 'info'));
     }
 
-    public function show(string $number)
+    public function show(string $number): View
     {
         $allRoutes = ContentService::transportRoutes();
         $route = null;

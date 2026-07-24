@@ -1,22 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use Illuminate\View\View;
 
 class EventController extends Controller
 {
-    public function index()
+    public function index(): View
     {
-        $events = Event::where('is_published', true)->latest()->get();
+        $events = Event::where('is_published', true)
+            ->select('id', 'slug', 'title', 'category', 'date', 'time', 'place', 'price', 'image')
+            ->latest()
+            ->paginate(12);
 
         return view('events.index', compact('events'));
     }
 
-    public function show($slug)
+    public function show(Event $event): View
     {
-        $event = Event::where('slug', $slug)->where('is_published', true)->firstOrFail();
-
         return view('events.show', compact('event'));
     }
 }

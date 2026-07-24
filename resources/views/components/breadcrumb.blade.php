@@ -1,6 +1,26 @@
 @props(['items' => []])
 
 @if(count($items) > 0)
+@php
+    $schemaItems = collect($items)->map(function ($item, $index) use ($items) {
+        $data = [
+            '@type' => 'ListItem',
+            'position' => $index + 1,
+            'name' => $item['label'],
+        ];
+        if (isset($item['href'])) {
+            $data['item'] = $item['href'];
+        }
+        return $data;
+    })->toArray();
+@endphp
+<script type="application/ld+json">
+{!! json_encode([
+    '@context' => 'https://schema.org',
+    '@type' => 'BreadcrumbList',
+    'itemListElement' => $schemaItems,
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}
+</script>
 <nav aria-label="Хлібні крихти" {{ $attributes }}>
     <ol class="flex items-center gap-1.5 text-sm text-muted-foreground">
         @foreach($items as $item)

@@ -1,15 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\News;
 use App\Models\Event;
 use App\Models\Place;
 use App\Models\Landmark;
+use Illuminate\View\View;
 
 class SearchController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         $query = trim(request('q', ''));
         $results = collect();
