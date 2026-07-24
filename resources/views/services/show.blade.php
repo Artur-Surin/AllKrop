@@ -56,12 +56,25 @@
         {{-- Main Content --}}
         <div class="lg:col-span-2 space-y-8">
 
+            {{-- Institution Notice --}}
+            <div class="rounded-2xl border border-primary/20 bg-primary/5 p-6">
+                <div class="flex items-start gap-3">
+                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </span>
+                    <div>
+                        <p class="text-sm font-semibold">Цю послугу надає установа міста</p>
+                        <p class="mt-1 text-sm text-muted-foreground">Портал надає інформацію. Для отримання послуги зверніться безпосередньо до відповідної установи.</p>
+                    </div>
+                </div>
+            </div>
+
             {{-- Steps --}}
             @if(!empty($service['steps']))
             <div class="rounded-2xl border border-border bg-card p-6">
                 <h2 class="flex items-center gap-2 font-serif text-xl font-bold tracking-tight">
                     <svg class="h-5 w-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-                    Покрокова інструкція
+                    Як отримати в установі
                 </h2>
                 <ol class="mt-5 space-y-4">
                     @foreach($service['steps'] as $i => $step)
@@ -75,7 +88,7 @@
             @endif
 
             {{-- Documents --}}
-            @if(!empty($service['documents']))
+            @if(!empty($service['documents']) && $service['documents'] !== ['Не потрібно'])
             <div class="rounded-2xl border border-border bg-card p-6">
                 <h2 class="flex items-center gap-2 font-serif text-xl font-bold tracking-tight">
                     <svg class="h-5 w-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
@@ -119,6 +132,66 @@
         {{-- Sidebar --}}
         <div class="space-y-6">
 
+            {{-- Go to Institution Button --}}
+            @if(!empty($service['url']))
+            <div class="rounded-2xl border border-border bg-card p-6">
+                <a
+                    href="{{ $service['url'] }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="flex w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.02]"
+                >
+                    Перейти на сайт установи
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                </a>
+            </div>
+            @endif
+
+            {{-- Institution Info Card --}}
+            @if($institution)
+            <div class="rounded-2xl border border-border bg-card p-6">
+                <h3 class="font-semibold">Установа</h3>
+                <div class="mt-4 space-y-4">
+                    <div class="flex items-start gap-3">
+                        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                        </span>
+                        <div>
+                            <p class="text-xs text-muted-foreground">Назва</p>
+                            <p class="mt-0.5 text-sm font-semibold">{{ $institution['name'] }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        </span>
+                        <div>
+                            <p class="text-xs text-muted-foreground">Адреса</p>
+                            <p class="mt-0.5 text-sm font-semibold">{{ $institution['address'] }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-green-500/10 text-green-600 dark:text-green-400">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                        </span>
+                        <div>
+                            <p class="text-xs text-muted-foreground">Телефон</p>
+                            <a href="tel:{{ preg_replace('/[^0-9+]/', '', $institution['phone']) }}" class="mt-0.5 text-sm font-semibold transition-colors hover:text-primary">{{ $institution['phone'] }}</a>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </span>
+                        <div>
+                            <p class="text-xs text-muted-foreground">Години роботи</p>
+                            <p class="mt-0.5 text-sm font-semibold">{{ $institution['hours'] }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             {{-- Pricing & Timeline Card --}}
             <div class="rounded-2xl border border-border bg-card p-6">
                 <h3 class="font-semibold">Терміни та вартість</h3>
@@ -151,36 +224,31 @@
                         </div>
                     </div>
                 </div>
-
-                <button
-                    id="openFormBtn"
-                    class="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.02]"
-                >
-                    Замовити послугу
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                </button>
             </div>
 
-            {{-- Nearby Offices --}}
-            <div class="rounded-2xl border border-border bg-card p-6">
-                <h3 class="font-semibold">Найближчі офіси</h3>
-                <div class="mt-4 space-y-3">
-                    @foreach(array_slice($offices, 0, 2) as $office)
-                        <div class="rounded-xl bg-secondary/50 p-3">
-                            <p class="text-sm font-medium">{{ $office['name'] }}</p>
-                            <p class="mt-1 text-xs text-muted-foreground">{{ $office['address'] }}</p>
-                            <p class="mt-0.5 text-xs text-muted-foreground">{{ $office['hours'] }}</p>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-
-            {{-- Help CTA --}}
+            {{-- Contact CTA --}}
             <div class="rounded-2xl border border-border bg-secondary/40 p-6">
-                <h3 class="font-semibold">Потрібна допомога?</h3>
-                <p class="mt-2 text-sm text-muted-foreground">Зателефонуйте на гарячу лінію або напишіть нам.</p>
+                <h3 class="font-semibold">Зв'язатися з установою</h3>
+                @if($institution)
+                <div class="mt-3 space-y-2 text-sm text-muted-foreground">
+                    <p class="flex items-center gap-2">
+                        <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                        <a href="tel:{{ preg_replace('/[^0-9+]/', '', $institution['phone']) }}" class="font-semibold transition-colors hover:text-primary">{{ $institution['phone'] }}</a>
+                    </p>
+                    <p class="flex items-center gap-2">
+                        <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        {{ $institution['hours'] }}
+                    </p>
+                    @if(!str_starts_with($institution['url'], 'tel:'))
+                    <p class="flex items-center gap-2">
+                        <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>
+                        <a href="{{ $institution['url'] }}" target="_blank" rel="noopener noreferrer" class="font-semibold transition-colors hover:text-primary">{{ parse_url($institution['url'], PHP_URL_HOST) }}</a>
+                    </p>
+                    @endif
+                </div>
+                @endif
                 <a href="{{ route('contacts') }}" class="mt-4 flex w-full items-center justify-center gap-2 rounded-full border border-border bg-card px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-secondary/80">
-                    Контакти
+                    Контакти порталу
                 </a>
             </div>
         </div>
@@ -194,52 +262,6 @@
         </a>
     </div>
 </div>
-
-{{-- Service Request Modal --}}
-<div id="serviceModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm">
-    <div class="mx-4 w-full max-w-lg rounded-2xl border border-border bg-card p-6 shadow-xl">
-        <div class="flex items-center justify-between">
-            <h3 class="font-serif text-xl font-bold">Замовити послугу</h3>
-            <button id="closeModal" class="rounded-lg p-1 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
-        </div>
-        <p class="mt-2 text-sm text-muted-foreground">Заповніть форму для «{{ $service['title'] }}»</p>
-
-        <form id="serviceForm" class="mt-6 space-y-4">
-            <div>
-                <label class="text-sm font-medium">Ім'я</label>
-                <input type="text" name="name" required class="mt-1.5 w-full rounded-xl border border-border bg-secondary/50 px-4 py-2.5 text-sm outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20" placeholder="Ваше ім'я" />
-            </div>
-            <div>
-                <label class="text-sm font-medium">Телефон</label>
-                <input type="tel" name="phone" required class="mt-1.5 w-full rounded-xl border border-border bg-secondary/50 px-4 py-2.5 text-sm outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20" placeholder="+38 (0XX) XXX-XX-XX" />
-            </div>
-            <div>
-                <label class="text-sm font-medium">Електронна пошта</label>
-                <input type="email" name="email" class="mt-1.5 w-full rounded-xl border border-border bg-secondary/50 px-4 py-2.5 text-sm outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20" placeholder="email@example.com" />
-            </div>
-            <div>
-                <label class="text-sm font-medium">Коментар</label>
-                <textarea name="comment" rows="3" class="mt-1.5 w-full resize-none rounded-xl border border-border bg-secondary/50 px-4 py-2.5 text-sm outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20" placeholder="Опишіть вашу потребу..."></textarea>
-            </div>
-            <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.02]">
-                Надіслати заявку
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-            </button>
-        </form>
-
-        <div id="formSuccess" class="hidden py-8 text-center">
-            <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-green-500/10 text-green-600 dark:text-green-400">
-                <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-            </div>
-            <p class="mt-4 text-lg font-bold">Заявку надіслано!</p>
-            <p class="mt-2 text-sm text-muted-foreground">Ми зв'яжемося з вами протягом 1–2 робочих днів.</p>
-            <p class="mt-1 text-xs text-muted-foreground">Номер вашої заявки: <strong id="modalTrackingNum"></strong></p>
-        </div>
-    </div>
-</div>
-
 @endsection
 
 @section('scripts')
@@ -268,41 +290,6 @@
                 btn.querySelector('.faq-chevron').style.transform = '';
             }
         });
-    });
-
-    // Modal
-    const modal = document.getElementById('serviceModal');
-    const openBtn = document.getElementById('openFormBtn');
-    const closeBtn = document.getElementById('closeModal');
-    const form = document.getElementById('serviceForm');
-    const success = document.getElementById('formSuccess');
-    const trackNum = document.getElementById('modalTrackingNum');
-
-    openBtn.addEventListener('click', () => {
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        document.body.style.overflow = 'hidden';
-    });
-
-    closeBtn.addEventListener('click', closeModal);
-    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
-
-    function closeModal() {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-        document.body.style.overflow = '';
-    }
-
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const num = 'ZAY-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random() * 999999)).padStart(6, '0');
-        trackNum.textContent = num;
-        form.classList.add('hidden');
-        success.classList.remove('hidden');
-    });
-
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal();
     });
 })();
 </script>

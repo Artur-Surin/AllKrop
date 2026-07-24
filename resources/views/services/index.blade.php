@@ -21,7 +21,14 @@
         </nav>
         <p class="mt-6 text-sm font-medium text-primary">Електронні послуги</p>
         <h1 class="mt-2 text-balance font-serif text-4xl font-bold tracking-tight sm:text-5xl">Міські послуги онлайн</h1>
-        <p class="mt-4 max-w-2xl text-pretty text-lg leading-relaxed text-muted-foreground">Замовляйте документи, сплачуйте комунальні, звертайтеся до міськради та беріть участь у житті громади — без черг і паперів.</p>
+        <p class="mt-4 max-w-2xl text-pretty text-lg leading-relaxed text-muted-foreground">Знайдіть потрібну послугу та дізнайтеся, куди звернутися для її отримання. Усі послуги доступні в установах міста.</p>
+
+        <div class="mt-5 flex items-start gap-3 rounded-2xl border border-primary/20 bg-primary/5 p-4 max-w-2xl">
+            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </span>
+            <p class="text-sm text-muted-foreground"><strong class="text-foreground">Всі послуги доступні в установах міста.</strong> Портал надає інформацію — для отримання послуги зверніться безпосередньо до відповідної установи.</p>
+        </div>
 
         {{-- Search --}}
         <div class="mt-8 max-w-xl">
@@ -126,12 +133,18 @@
     <div class="mt-14 flex flex-col items-start gap-4 rounded-3xl border border-border bg-secondary/40 p-8 sm:flex-row sm:items-center sm:justify-between">
         <div>
             <h2 class="font-serif text-2xl font-bold tracking-tight">Не знайшли потрібну послугу?</h2>
-            <p class="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">Зверніться до Центру надання адміністративних послуг або скористайтеся контакт-центром міста для консультації.</p>
+            <p class="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">Зверніться до Центру надання адміністративних послуг або зателефонуйте на гарячу лінію міста.</p>
         </div>
-        <a href="{{ route('contacts') }}" class="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.02]">
-            До контактів
-            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-        </a>
+        <div class="flex flex-col gap-3 sm:flex-row">
+            <a href="tel:+3805221580" class="inline-flex shrink-0 items-center justify-center gap-2 rounded-full border border-border bg-card px-6 py-3.5 text-sm font-semibold transition-colors hover:bg-secondary/80">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                1580
+            </a>
+            <a href="{{ route('contacts') }}" class="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.02]">
+                До контактів
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </a>
+        </div>
     </div>
 </section>
 

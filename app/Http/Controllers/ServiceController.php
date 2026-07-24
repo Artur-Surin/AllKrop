@@ -24,7 +24,8 @@ class ServiceController extends Controller
         }
 
         $offices = ContentService::serviceOffices();
+        $institution = ContentService::getInstitution($slug);
 
-        return view('services.show', compact('service', 'offices'));
+        return view('services.show', compact('service', 'offices', 'institution'));
     }
 }
