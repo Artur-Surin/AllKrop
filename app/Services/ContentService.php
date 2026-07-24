@@ -2,6 +2,9 @@
 
 namespace App\Services;
 
+use App\Models\News as NewsModel;
+use App\Models\Event as EventModel;
+
 class ContentService
 {
     public static function navLinks(): array
@@ -29,7 +32,7 @@ class ContentService
 
     public static function news(): array
     {
-        return [
+        $hardcoded = [
             [
                 'slug' => 'onovlena-pishohidna-zona',
                 'tag' => 'Місто',
@@ -38,6 +41,8 @@ class ContentService
                 'date' => '24 липня',
                 'read' => '3 хв',
                 'image' => '/images/hero-city.png',
+                'source' => null,
+                'source_url' => null,
                 'body' => [
                     'Після кількох місяців робіт у самому серці міста офіційно відкрили оновлену пішохідну зону. Простір спроєктували так, щоб він був зручним для родин з дітьми, людей з інвалідністю та велосипедистів.',
                     'Тут з\'явилося енергоефективне освітлення, десятки нових лавок, урни для роздільного збору відходів і понад сотня молодих дерев та кущів. Уздовж вулиці облаштували майданчики, де вихідними проходитимуть ярмарки та вуличні концерти.',
@@ -52,6 +57,8 @@ class ContentService
                 'date' => '22 липня',
                 'read' => '2 хв',
                 'image' => '/images/landmark-park.png',
+                'source' => null,
+                'source_url' => null,
                 'body' => [
                     'Місто розширює мережу електротранспорту: на маршрути виходять нові електробуси, які з\'єднають віддалені житлові масиви з центром та залізничним вокзалом.',
                     'Нові транспортні засоби мають низьку підлогу, обладнані місцями для маломобільних пасажирів, USB-зарядками та інформаційними табло.',
@@ -65,6 +72,8 @@ class ContentService
                 'date' => '20 липня',
                 'read' => '4 хв',
                 'image' => '/images/place-gallery.png',
+                'source' => null,
+                'source_url' => null,
                 'body' => [
                     'Музей просто неба відкрив нову постійну експозицію, присвячену традиційним ремеслам Центральної України.',
                     'Для гостей проводитимуть майстер-класи, де можна власноруч спробувати сформувати глиняний глечик чи виткати смужку рушника.',
@@ -78,6 +87,8 @@ class ContentService
                 'date' => '18 липня',
                 'read' => '3 хв',
                 'image' => '/images/event-market.png',
+                'source' => null,
+                'source_url' => null,
                 'body' => [
                     'Наприкінці серпня в Кропивницькому відбудеться масштабний гастрономічний фестиваль.',
                     'Гості зможуть скуштувати страви регіональної кухні, відвідати дегустації та кулінарні шоу від відомих шефів.',
@@ -91,6 +102,8 @@ class ContentService
                 'date' => '15 липня',
                 'read' => '2 хв',
                 'image' => '/images/landmark-park.png',
+                'source' => null,
+                'source_url' => null,
                 'body' => [
                     'У міському парку завершили будівництво сучасного спортивного майданчика.',
                     'Покриття виконане з ударопоглинальних матеріалів, а територія обладнана освітленням для вечірніх тренувань.',
@@ -104,18 +117,64 @@ class ContentService
                 'date' => '12 липня',
                 'read' => '3 хв',
                 'image' => '/images/place-cafe.png',
+                'source' => null,
+                'source_url' => null,
                 'body' => [
                     'Новий волонтерський хаб став центром об\'єднання громадських ініціатив міста.',
                     'Простір відкритий для всіх, хто хоче долучитися до волонтерства.',
                 ],
             ],
         ];
+
+        $dbNews = NewsModel::latest()->get()->map(function ($item) {
+            return [
+                'slug' => $item->slug,
+                'tag' => $item->tag,
+                'title' => $item->title,
+                'excerpt' => $item->excerpt,
+                'date' => $item->date,
+                'read' => $item->read_time,
+                'image' => $item->image,
+                'source' => $item->source,
+                'source_url' => $item->source_url,
+                'body' => $item->body,
+            ];
+        })->toArray();
+
+        $all = array_merge($dbNews, $hardcoded);
+
+        $slugs = [];
+        $unique = [];
+        foreach ($all as $item) {
+            if (!in_array($item['slug'], $slugs)) {
+                $slugs[] = $item['slug'];
+                $unique[] = $item;
+            }
+        }
+
+        return $unique;
     }
 
     public static function getNews(string $slug): ?array
     {
-        $news = static::news();
-        foreach ($news as $item) {
+        $news = NewsModel::where('slug', $slug)->first();
+        if ($news) {
+            return [
+                'slug' => $news->slug,
+                'tag' => $news->tag,
+                'title' => $news->title,
+                'excerpt' => $news->excerpt,
+                'date' => $news->date,
+                'read' => $news->read_time,
+                'image' => $news->image,
+                'source' => $news->source,
+                'source_url' => $news->source_url,
+                'body' => $news->body,
+            ];
+        }
+
+        $all = static::news();
+        foreach ($all as $item) {
             if ($item['slug'] === $slug) return $item;
         }
         return null;
@@ -123,7 +182,7 @@ class ContentService
 
     public static function events(): array
     {
-        return [
+        $hardcoded = [
             [
                 'slug' => 'litnij-muzychnyj-vechir',
                 'image' => '/images/event-concert.png',
@@ -133,6 +192,8 @@ class ContentService
                 'time' => '19:00',
                 'place' => 'Центральна площа',
                 'price' => 'Безкоштовно',
+                'source' => null,
+                'source_url' => null,
                 'description' => [
                     'Проведіть теплий літній вечір під живу музику просто неба. На головній сцені міста виступлять місцеві гурти та запрошені виконавці.',
                     'На гостей чекає зона фудкорту з локальними стравами та напоями, а також простір для відпочинку родинами.',
@@ -147,6 +208,8 @@ class ContentService
                 'time' => '10:00',
                 'place' => 'Ковалівський парк',
                 'price' => 'Вхід вільний',
+                'source' => null,
+                'source_url' => null,
                 'description' => [
                     'Великий ярмарок збере майстрів з усього регіону: кераміка, вишивка, вироби з дерева та шкіри.',
                     'Упродовж дня — майстер-класи, дитячі активності та музичний супровід.',
@@ -161,6 +224,8 @@ class ContentService
                 'time' => '18:30',
                 'place' => 'Театр ім. Кропивницького',
                 'price' => 'від 150 ₴',
+                'source' => null,
+                'source_url' => null,
                 'description' => [
                     'Прем\'єрна вистава сезону від трупи одного з найстаріших театрів України.',
                     'Квитки доступні онлайн та в касі театру.',
@@ -175,6 +240,8 @@ class ContentService
                 'time' => '21:00',
                 'place' => 'Дендропарк',
                 'price' => '120 ₴',
+                'source' => null,
+                'source_url' => null,
                 'description' => [
                     'Затишний кінопоказ під зорями у міському дендропарку.',
                     'Перед показом — коротка лекція про історію кіно від міського кіноклубу.',
@@ -189,6 +256,8 @@ class ContentService
                 'time' => '12:00',
                 'place' => 'Галерея сучасного мистецтва',
                 'price' => '80 ₴',
+                'source' => null,
+                'source_url' => null,
                 'description' => [
                     'Нова виставка об\'єднує роботи молодих митців регіону.',
                     'Для відвідувачів проводитимуть кураторські екскурсії щовихідних.',
@@ -203,18 +272,66 @@ class ContentService
                 'time' => '11:00',
                 'place' => 'Ковалівський парк',
                 'price' => 'Безкоштовно',
+                'source' => null,
+                'source_url' => null,
                 'description' => [
                     'День активного відпочинку для всієї родини: спортивні ігри, творчі майстерні, анімація для дітей.',
                     'Захід безкоштовний, реєстрація не потрібна.',
                 ],
             ],
         ];
+
+        $dbEvents = EventModel::latest()->get()->map(function ($item) {
+            return [
+                'slug' => $item->slug,
+                'image' => $item->image,
+                'title' => $item->title,
+                'category' => $item->category,
+                'date' => $item->date,
+                'time' => $item->time,
+                'place' => $item->place,
+                'price' => $item->price,
+                'source' => $item->source,
+                'source_url' => $item->source_url,
+                'description' => $item->description,
+            ];
+        })->toArray();
+
+        $all = array_merge($dbEvents, $hardcoded);
+
+        $slugs = [];
+        $unique = [];
+        foreach ($all as $item) {
+            if (!in_array($item['slug'], $slugs)) {
+                $slugs[] = $item['slug'];
+                $unique[] = $item;
+            }
+        }
+
+        return $unique;
     }
 
     public static function getEvent(string $slug): ?array
     {
-        $events = static::events();
-        foreach ($events as $e) {
+        $event = EventModel::where('slug', $slug)->first();
+        if ($event) {
+            return [
+                'slug' => $event->slug,
+                'image' => $event->image,
+                'title' => $event->title,
+                'category' => $event->category,
+                'date' => $event->date,
+                'time' => $event->time,
+                'place' => $event->place,
+                'price' => $event->price,
+                'source' => $event->source,
+                'source_url' => $event->source_url,
+                'description' => $event->description,
+            ];
+        }
+
+        $all = static::events();
+        foreach ($all as $e) {
             if ($e['slug'] === $slug) return $e;
         }
         return null;

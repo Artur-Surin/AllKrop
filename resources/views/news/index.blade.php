@@ -37,7 +37,12 @@
             <img src="{{ $lead['image'] }}" alt="{{ $lead['title'] }}" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" decoding="async">
         </div>
         <div class="flex flex-col justify-center p-6 sm:p-10">
-            <span class="w-fit rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground">{{ $lead['tag'] }}</span>
+            <div class="flex items-center gap-2">
+                <span class="w-fit rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground">{{ $lead['tag'] }}</span>
+                @if(!empty($lead['source']))
+                    <span class="w-fit rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">{{ $lead['source'] }}</span>
+                @endif
+            </div>
             <h2 class="mt-4 text-balance font-serif text-2xl font-bold leading-snug sm:text-3xl">{{ $lead['title'] }}</h2>
             <p class="mt-3 text-pretty leading-relaxed text-muted-foreground">{{ $lead['excerpt'] }}</p>
             <div class="mt-6 flex items-center gap-4 text-xs text-muted-foreground">
@@ -56,6 +61,9 @@
                 <div class="relative aspect-[16/10] overflow-hidden">
                     <img src="{{ $item['image'] }}" alt="{{ $item['title'] }}" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" decoding="async">
                     <span class="absolute left-3 top-3 rounded-full bg-background/90 px-3 py-1 text-xs font-medium backdrop-blur">{{ $item['tag'] }}</span>
+                    @if(!empty($item['source']))
+                        <span class="absolute right-3 top-3 rounded-full bg-blue-100/90 px-3 py-1 text-xs font-medium text-blue-700 backdrop-blur dark:bg-blue-900/30 dark:text-blue-300">{{ $item['source'] }}</span>
+                    @endif
                 </div>
                 <div class="flex flex-1 flex-col p-6">
                     <h3 class="text-pretty font-serif text-lg font-semibold leading-snug">{{ $item['title'] }}</h3>

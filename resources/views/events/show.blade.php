@@ -16,11 +16,22 @@
 @section('content')
 <section class="relative">
     <div class="relative h-[42vh] min-h-72 w-full overflow-hidden">
-        <img src="{{ $event['image'] }}" alt="{{ $event['title'] }}" class="h-full w-full object-cover" loading="lazy" decoding="async">
+        @if(!empty($event['image']) && file_exists(public_path($event['image'])))
+            <img src="{{ $event['image'] }}" alt="{{ $event['title'] }}" class="h-full w-full object-cover" loading="lazy" decoding="async">
+        @else
+            <div class="flex h-full w-full items-center justify-center bg-secondary/50">
+                <svg class="h-16 w-16 text-muted-foreground/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+            </div>
+        @endif
         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" aria-hidden="true"></div>
         <div class="absolute inset-x-0 bottom-0">
             <div class="mx-auto max-w-6xl px-4 pb-8 sm:px-6">
-                <span class="rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground">{{ $event['category'] }}</span>
+                <div class="flex items-center gap-2">
+                    <span class="rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground">{{ $event['category'] }}</span>
+                    @if(!empty($event['source']))
+                        <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">{{ $event['source'] }}</span>
+                    @endif
+                </div>
                 <h1 class="mt-3 max-w-3xl text-balance font-serif text-3xl font-bold text-white sm:text-5xl">{{ $event['title'] }}</h1>
             </div>
         </div>

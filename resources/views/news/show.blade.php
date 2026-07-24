@@ -23,7 +23,12 @@
         Усі новини
     </a>
 
-    <span class="mt-6 inline-block rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground">{{ $article['tag'] }}</span>
+    <div class="mt-6 flex items-center gap-2">
+        <span class="inline-block rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground">{{ $article['tag'] }}</span>
+        @if(!empty($article['source']))
+            <span class="inline-block rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">Джерело: {{ $article['source'] }}</span>
+        @endif
+    </div>
     <h1 class="mt-4 text-balance font-serif text-3xl font-bold leading-tight tracking-tight sm:text-4xl">{{ $article['title'] }}</h1>
     <div class="mt-4 flex items-center gap-4 text-sm text-muted-foreground">
         <span>{{ $article['date'] }}</span>

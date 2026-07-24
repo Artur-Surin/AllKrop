@@ -34,12 +34,21 @@
         @foreach($events as $ev)
             <a href="{{ route('events.show', $ev['slug']) }}" class="group overflow-hidden rounded-2xl border border-border bg-card transition-transform hover:-translate-y-1">
                 <div class="relative aspect-[3/2] overflow-hidden">
-                    <img src="{{ $ev['image'] }}" alt="{{ $ev['title'] }}" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" decoding="async">
+                    @if(!empty($ev['image']) && file_exists(public_path($ev['image'])))
+                        <img src="{{ $ev['image'] }}" alt="{{ $ev['title'] }}" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" decoding="async">
+                    @else
+                        <div class="flex h-full w-full items-center justify-center bg-secondary/50">
+                            <svg class="h-12 w-12 text-muted-foreground/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                        </div>
+                    @endif
                     <div class="absolute left-3 top-3 flex flex-col items-center rounded-xl bg-background/90 px-3 py-1.5 text-center backdrop-blur">
                         <span class="font-serif text-lg font-bold leading-none">{{ explode(' ', $ev['date'])[0] }}</span>
-                        <span class="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">{{ explode(' ', $ev['date'])[1] }}</span>
+                        <span class="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">{{ explode(' ', $ev['date'])[1] ?? '' }}</span>
                     </div>
                     <span class="absolute right-3 top-3 rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground">{{ $ev['category'] }}</span>
+                    @if(!empty($ev['source']))
+                        <span class="absolute right-3 bottom-3 rounded-full bg-blue-100/90 px-3 py-1 text-xs font-medium text-blue-700 backdrop-blur dark:bg-blue-900/30 dark:text-blue-300">{{ $ev['source'] }}</span>
+                    @endif
                 </div>
                 <div class="p-5">
                     <h3 class="text-pretty font-serif text-lg font-semibold leading-snug">{{ $ev['title'] }}</h3>
