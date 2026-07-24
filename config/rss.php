@@ -3,9 +3,9 @@
 return [
     'feeds' => [
         'news' => [
-            ['name' => 'Суспільне Кропивницький', 'url' => 'https://suspilne.media/kr/rss'],
-            ['name' => 'Вечірній Кропивницький', 'url' => 'https://vechirniy.kr.ua/rss'],
-            ['name' => 'Громадське ТБ Кіровоградщини', 'url' => 'https://kr.gromadske.tv/rss'],
+            ['name' => 'Суспільне Новини', 'url' => 'https://suspilne.media/feed'],
+            ['name' => 'Українська правда', 'url' => 'https://www.pravda.com.ua/rss/news/'],
+            ['name' => 'Укрінформ', 'url' => 'https://www.ukrinform.net/rss'],
         ],
         'events' => [
             ['name' => 'Афіша Кропивницького', 'url' => 'https://afisha.kr.ua/rss'],
