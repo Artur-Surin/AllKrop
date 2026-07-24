@@ -41,7 +41,7 @@ class Place extends Model
 
     public function getAverageRatingAttribute(): float
     {
-        return round($this->reviews()->avg('rating') ?? 0, 1);
+        return round((float) ($this->reviews()->avg('rating') ?? 0), 1);
     }
 
     public function getReviewsCountAttribute(): int
