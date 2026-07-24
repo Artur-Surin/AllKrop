@@ -32,8 +32,6 @@ class PlaceResource extends Resource
     {
         return $schema
             ->schema([
-                Forms\Components\Section::make()
-                    ->schema([
                         Forms\Components\TextInput::make('slug')
                             ->label('Slug')
                             ->required()
@@ -81,8 +79,6 @@ class PlaceResource extends Resource
                         Forms\Components\RichEditor::make('description')
                             ->label('Опис')
                             ->columnSpanFull(),
-                    ])
-                    ->columns(2),
             ]);
     }
 
