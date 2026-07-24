@@ -2,14 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ServiceGroup;
+use App\Services\ContentService;
 
 class ServiceController extends Controller
 {
     public function index()
     {
-        $serviceGroups = ServiceGroup::with('items')->orderBy('position')->get();
+        $serviceGroups = ContentService::serviceGroups();
+        $categories = ContentService::serviceCategories();
+        $offices = ContentService::serviceOffices();
 
-        return view('services', compact('serviceGroups'));
+        return view('services.index', compact('serviceGroups', 'categories', 'offices'));
+    }
+
+    public function show(string $slug)
+    {
+        $service = ContentService::getServiceBySlug($slug);
+
+        if (!$service) {
+            abort(404);
+        }
+
+        $offices = ContentService::serviceOffices();
+
+        return view('services.show', compact('service', 'offices'));
     }
 }
