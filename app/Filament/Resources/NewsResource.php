@@ -93,6 +93,33 @@ class NewsResource extends Resource
                     ->schema([
                         Forms\Components\RichEditor::make('body')
                             ->label('Текст')
+                            ->formatStateUsing(function ($state) {
+                                if (is_array($state)) {
+                                    if (! isset($state['type'])) {
+                                        return implode('', array_map(function ($p) {
+                                            $p = trim((string) $p);
+                                            if ($p === '') return '';
+                                            return str_starts_with($p, '<') ? $p : "<p>{$p}</p>";
+                                        }, $state));
+                                    }
+                                }
+                                return $state;
+                            })
+                            ->dehydrateStateUsing(function ($state) {
+                                if (empty($state)) {
+                                    return [];
+                                }
+                                if (is_string($state)) {
+                                    preg_match_all('/<p>(.*?)<\/p>/is', $state, $matches);
+                                    if (! empty($matches[1])) {
+                                        $paragraphs = array_map(fn ($p) => trim(strip_tags($p)), $matches[1]);
+                                        return array_values(array_filter($paragraphs, fn ($p) => $p !== ''));
+                                    }
+                                    $lines = array_map('trim', explode("\n", strip_tags($state)));
+                                    return array_values(array_filter($lines, fn ($l) => $l !== ''));
+                                }
+                                return $state;
+                            })
                             ->toolbarButtons([
                                 'bold',
                                 'italic',
