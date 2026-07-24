@@ -9,7 +9,7 @@ class Landmark extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['slug', 'image', 'title', 'description', 'body'];
+    protected $fillable = ['slug', 'image', 'title', 'description', 'address', 'working_hours', 'category', 'body'];
 
     protected $casts = [
         'body' => 'array',
