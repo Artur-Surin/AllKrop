@@ -21,5 +21,6 @@ class Event extends Model
     protected $casts = [
         'description' => 'array',
         'is_published' => 'boolean',
+        'date' => 'string',
     ];
 }

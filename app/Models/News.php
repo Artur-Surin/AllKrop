@@ -21,5 +21,6 @@ class News extends Model
     protected $casts = [
         'body' => 'array',
         'is_published' => 'boolean',
+        'date' => 'string',
     ];
 }
