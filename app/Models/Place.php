@@ -21,7 +21,7 @@ class Place extends Model
     }
 
     protected $casts = [
-        'description' => 'string',
+        'description' => 'array',
     ];
 
     public function category(): BelongsTo
