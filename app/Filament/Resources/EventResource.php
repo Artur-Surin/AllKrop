@@ -212,7 +212,6 @@ class EventResource extends Resource
 
                 Tables\Columns\TextColumn::make('date')
                     ->label('Дата')
-                    ->dateTime('d.m.Y')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('time')
