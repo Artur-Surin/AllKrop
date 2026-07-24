@@ -58,6 +58,12 @@ class RssParserService
 
             $image = $this->extractImage($item) ?: config('rss.default_image', '/images/hero-city.png');
 
+            $fullText = $title . ' ' . $excerpt;
+
+            if (!$this->isRelatedToCity($fullText)) {
+                continue;
+            }
+
             $items[] = [
                 'title' => $title,
                 'slug' => $this->generateSlug($title),
@@ -96,6 +102,12 @@ class RssParserService
             $link = (string) ($item->link ?? '');
 
             $image = $this->extractImage($item) ?: config('rss.default_image', '/images/hero-city.png');
+
+            $fullText = $title . ' ' . $excerpt;
+
+            if (!$this->isRelatedToCity($fullText)) {
+                continue;
+            }
 
             $items[] = [
                 'title' => $title,
@@ -288,5 +300,33 @@ class RssParserService
         $wordCount = str_word_count($text);
         $minutes = max(1, (int) ceil($wordCount / 200));
         return "{$minutes} хв";
+    }
+
+    private function isRelatedToCity(string $text): bool
+    {
+        $text = mb_strtolower($text);
+
+        $keywords = [
+            'кропивницький',
+            'кропивницька',
+            'кропивницького',
+            'кропивницькому',
+            'кропивницьку',
+            'кіровоград',
+            'кіровоградськ',
+            'кіровоградщин',
+            'обласний центр',
+            'обласна рада',
+            'міська рада',
+            'міський голова',
+        ];
+
+        foreach ($keywords as $keyword) {
+            if (mb_strpos($text, $keyword) !== false) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
