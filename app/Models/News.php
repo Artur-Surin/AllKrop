@@ -9,9 +9,10 @@ class News extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['slug', 'source', 'source_url', 'tag', 'title', 'excerpt', 'date', 'read_time', 'image', 'body'];
+    protected $fillable = ['slug', 'source', 'source_url', 'tag', 'title', 'excerpt', 'date', 'read_time', 'image', 'body', 'is_published'];
 
     protected $casts = [
         'body' => 'array',
+        'is_published' => 'boolean',
     ];
 }
