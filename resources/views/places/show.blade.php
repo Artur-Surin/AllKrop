@@ -224,7 +224,7 @@
             var name = document.getElementById('review-name').value;
             var comment = document.getElementById('review-comment').value;
 
-            fetch('{{ route("reviews.store", $place->id) }}', {
+            fetch('{{ route("reviews.store", $place->slug) }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
