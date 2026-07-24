@@ -110,6 +110,62 @@
     </div>
 
     <section class="mt-14">
+        <div class="flex items-center gap-3">
+            <span class="relative flex h-3 w-3">
+                <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
+                <span class="relative inline-flex h-3 w-3 rounded-full bg-green-500"></span>
+            </span>
+            <h2 class="font-serif text-2xl font-bold tracking-tight sm:text-3xl">Відстеження онлайн</h2>
+        </div>
+        <p class="mt-2 text-sm text-muted-foreground">Реальний час — позиції транспорту на карті (демо-режим)</p>
+
+        <div class="relative mt-6 overflow-hidden rounded-2xl border border-border bg-card" style="height: 500px;">
+            <div class="absolute inset-0 bg-gradient-to-br from-blue-50 to-green-50 dark:from-blue-950/30 dark:to-green-950/30">
+                <svg class="h-full w-full opacity-20" viewBox="0 0 800 500">
+                    <line x1="0" y1="250" x2="800" y2="250" stroke="currentColor" stroke-width="2"/>
+                    <line x1="400" y1="0" x2="400" y2="500" stroke="currentColor" stroke-width="2"/>
+                    <line x1="100" y1="0" x2="100" y2="500" stroke="currentColor" stroke-width="1"/>
+                    <line x1="200" y1="0" x2="200" y2="500" stroke="currentColor" stroke-width="1"/>
+                    <line x1="300" y1="0" x2="300" y2="500" stroke="currentColor" stroke-width="1"/>
+                    <line x1="500" y1="0" x2="500" y2="500" stroke="currentColor" stroke-width="1"/>
+                    <line x1="600" y1="0" x2="600" y2="500" stroke="currentColor" stroke-width="1"/>
+                    <line x1="700" y1="0" x2="700" y2="500" stroke="currentColor" stroke-width="1"/>
+                    <line x1="0" y1="100" x2="800" y2="100" stroke="currentColor" stroke-width="1"/>
+                    <line x1="0" y1="200" x2="800" y2="200" stroke="currentColor" stroke-width="1"/>
+                    <line x1="0" y1="300" x2="800" y2="300" stroke="currentColor" stroke-width="1"/>
+                    <line x1="0" y1="400" x2="800" y2="400" stroke="currentColor" stroke-width="1"/>
+                    <path d="M50,150 Q200,50 400,200 T750,180" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="8,4"/>
+                    <path d="M80,350 Q250,450 500,300 T780,380" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="8,4"/>
+                    <circle cx="400" cy="250" r="60" stroke="currentColor" stroke-width="1" fill="none" stroke-dasharray="4,4"/>
+                    <circle cx="400" cy="250" r="120" stroke="currentColor" stroke-width="1" fill="none" stroke-dasharray="4,4"/>
+                </svg>
+            </div>
+
+            <div id="tracking-map" class="absolute inset-0"></div>
+
+            <div class="absolute bottom-4 left-4 rounded-xl bg-background/90 p-3 backdrop-blur">
+                <p class="text-xs font-medium mb-2">Легенда:</p>
+                <div class="flex flex-col gap-1">
+                    <span class="flex items-center gap-2 text-xs"><span class="h-3 w-3 rounded-full bg-blue-500"></span> Тролейбус</span>
+                    <span class="flex items-center gap-2 text-xs"><span class="h-3 w-3 rounded-full bg-green-500"></span> Електробус</span>
+                    <span class="flex items-center gap-2 text-xs"><span class="h-3 w-3 rounded-full bg-amber-500"></span> Автобус</span>
+                    <span class="flex items-center gap-2 text-xs"><span class="h-3 w-3 rounded-full bg-purple-500"></span> Маршрутка</span>
+                </div>
+            </div>
+
+            <div class="absolute top-4 right-4 rounded-xl bg-background/90 px-4 py-2 backdrop-blur">
+                <div class="flex items-center gap-2">
+                    <span class="relative flex h-2 w-2">
+                        <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
+                        <span class="relative inline-flex h-2 w-2 rounded-full bg-green-500"></span>
+                    </span>
+                    <span class="text-xs font-medium">Оновлення: <span id="last-update">щойно</span></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mt-14">
         <h2 class="font-serif text-2xl font-bold tracking-tight sm:text-3xl">Карта зупинок</h2>
         <p class="mt-2 text-sm leading-relaxed text-muted-foreground">Інтерактивна карта зупинок громадського транспорту міста Кропивницький.</p>
         <div class="mt-6 overflow-hidden rounded-2xl border border-border">
@@ -159,5 +215,63 @@
     });
 
     searchInput.addEventListener('input', filterRoutes);
+
+    // Transport tracking simulation
+    const trackingRoutes = [
+        { number: '1', type: 'Тролейбус', color: '#3b82f6', stops: [[100,250],[200,200],[300,180],[400,200],[500,250],[600,300]] },
+        { number: '3', type: 'Тролейбус', color: '#3b82f6', stops: [[150,100],[250,150],[350,200],[450,250],[550,300]] },
+        { number: '9', type: 'Електробус', color: '#22c55e', stops: [[100,400],[200,350],[350,300],[500,250],[650,200]] },
+        { number: '14', type: 'Автобус', color: '#f59e0b', stops: [[50,300],[150,250],[300,200],[450,150],[600,100]] },
+        { number: '27', type: 'Маршрутка', color: '#a855f7', stops: [[200,50],[300,100],[400,200],[500,300],[600,400]] },
+    ];
+
+    const trackingMap = document.getElementById('tracking-map');
+    const vehicles = [];
+
+    trackingRoutes.forEach(route => {
+        const el = document.createElement('div');
+        el.className = 'absolute transition-all duration-1000 ease-in-out';
+        el.innerHTML = `
+            <div class="relative group cursor-pointer">
+                <div class="h-8 w-8 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-lg" style="background: ${route.color}">
+                    ${route.number}
+                </div>
+                <div class="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-white border-2 animate-pulse" style="border-color: ${route.color}"></div>
+                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block">
+                    <div class="rounded-lg bg-background/95 px-3 py-2 text-xs shadow-lg backdrop-blur whitespace-nowrap">
+                        <p class="font-semibold">Маршрут ${route.number}</p>
+                        <p class="text-muted-foreground">${route.type}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+        trackingMap.appendChild(el);
+        vehicles.push({ el, route, currentStop: 0, progress: Math.random() });
+    });
+
+    function animateVehicles() {
+        vehicles.forEach(v => {
+            const stops = v.route.stops;
+            const from = stops[v.currentStop];
+            const to = stops[(v.currentStop + 1) % stops.length];
+
+            v.progress += 0.005 + Math.random() * 0.003;
+
+            if (v.progress >= 1) {
+                v.progress = 0;
+                v.currentStop = (v.currentStop + 1) % stops.length;
+            }
+
+            const x = from[0] + (to[0] - from[0]) * v.progress;
+            const y = from[1] + (to[1] - from[1]) * v.progress;
+
+            v.el.style.left = `${x}%`;
+            v.el.style.top = `${y}%`;
+        });
+
+        document.getElementById('last-update').textContent = new Date().toLocaleTimeString('uk-UA');
+    }
+
+    setInterval(animateVehicles, 100);
 </script>
 @endsection
