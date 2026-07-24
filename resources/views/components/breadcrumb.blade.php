@@ -32,7 +32,7 @@
                 </li>
             @else
                 <li class="flex items-center gap-1.5">
-                    <x-icon name="ChevronRight" class="h-3.5 w-3.5" />
+                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
                     @if(isset($item['href']))
                         <a href="{{ $item['href'] }}" class="transition-colors hover:text-foreground">{{ $item['label'] }}</a>
                     @else
