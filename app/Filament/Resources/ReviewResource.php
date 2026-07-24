@@ -30,7 +30,6 @@ class ReviewResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->schema([
-            Forms\Components\Section::make('Інформація про відгук')->schema([
                 Forms\Components\Select::make('place_id')
                     ->label('Заклад')
                     ->relationship('place', 'name')
@@ -58,7 +57,6 @@ class ReviewResource extends Resource
                 Forms\Components\Toggle::make('is_approved')
                     ->label('Схвалено')
                     ->default(false),
-            ])->columns(2),
         ]);
     }
 
