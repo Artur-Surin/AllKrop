@@ -21,7 +21,7 @@
         </nav>
         <p class="mt-6 text-sm font-medium text-primary">Про місто</p>
         <h1 class="mt-2 text-balance font-serif text-4xl font-bold tracking-tight sm:text-5xl">Кропивницький — місто, яке варто відкрити</h1>
-        <p class="mt-4 max-w-2xl text-pretty text-lg leading-relaxed text-muted-foreground">Розташований у самому серці Центральної України на річці Інгул, Кропивницький поєднує багату театральну спадщину, зелені парки та затишну атмосферу міста з 272-річною історією. Заснований як військова фортеця, сьогодні він є обласним центром з населенням понад 215 000 мешканців.</p>
+        <p class="mt-4 rounded-2xl border border-border bg-card p-6 text-pretty text-lg leading-relaxed text-muted-foreground">Розташований у самому серці Центральної України на річці Інгул, Кропивницький поєднує багату театральну спадщину, зелені парки та затишну атмосферу міста з 272-річною історією. Заснований як військова фортеця, сьогодні він є обласним центром з населенням понад 215 000 мешканців.</p>
     </div>
 </section>
 
