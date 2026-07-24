@@ -56,8 +56,16 @@
         @endforeach
     </div>
 
-    <div class="mt-10">
-        {{ $events->links() }}
+    <div class="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
+        <a href="{{ $events->previousPageUrl() }}" class="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground {{ $events->onFirstPage() ? 'pointer-events-none opacity-50' : '' }}">
+            « Попередня
+        </a>
+        <span class="text-sm text-muted-foreground">
+            Показано {{ $events->firstItem() }}–{{ $events->lastItem() }} з {{ $events->total() }} результатів
+        </span>
+        <a href="{{ $events->nextPageUrl() }}" class="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground {{ $events->hasMorePages() ? '' : 'pointer-events-none opacity-50' }}">
+            Наступна »
+        </a>
     </div>
 </div>
 @endsection
