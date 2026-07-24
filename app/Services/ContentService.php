@@ -664,24 +664,24 @@ class ContentService
     {
         $institutions = [
             'dovidky-ta-vytiahky' => [
-                'name' => 'Кропивницька міська рада',
-                'address' => 'вул. Велика Перспективна, 41',
-                'phone' => '+380 (522) 30-71-00',
-                'url' => 'https://kr-rada.gov.ua',
-                'hours' => 'Пн–Пт: 09:00 – 17:00',
+                'name' => 'Центр надання адміністративних послуг (ЦНАП)',
+                'address' => 'вул. Велика Перспективна, 40',
+                'phone' => '+38 (052) 233-40-40',
+                'url' => 'https://dozvil.kr-rada.gov.ua',
+                'hours' => 'Пн–Пт: 08:00 – 17:00',
             ],
             'reiestratsiia-mistcya-prozhuvannya' => [
                 'name' => 'Центр надання адміністративних послуг (ЦНАП)',
                 'address' => 'вул. Велика Перспективна, 40',
                 'phone' => '+38 (052) 233-40-40',
-                'url' => 'https://kr-rada.gov.ua',
+                'url' => 'https://dozvil.kr-rada.gov.ua',
                 'hours' => 'Пн–Пт: 08:00 – 17:00',
             ],
             'reiestratsiia-novonarodzhenykh' => [
                 'name' => 'Центр надання адміністративних послуг (ЦНАП єМалятко)',
                 'address' => 'вул. Велика Перспективна, 40',
                 'phone' => '+38 (052) 233-40-40',
-                'url' => 'https://kr-rada.gov.ua',
+                'url' => 'https://dozvil.kr-rada.gov.ua',
                 'hours' => 'Пн–Пт: 08:00 – 17:00',
             ],
             'oplata-komunalnykh' => [
@@ -695,7 +695,7 @@ class ContentService
                 'name' => 'Комунальне підприємство міста',
                 'address' => 'вул. Велика Перспективна, 41',
                 'phone' => '+380 (522) 15-80',
-                'url' => 'https://kr-rada.gov.ua',
+                'url' => 'https://dozvil.kr-rada.gov.ua',
                 'hours' => 'Пн–Пт: 08:00 – 17:00',
             ],
             'subsydii-ta-pilhy' => [
