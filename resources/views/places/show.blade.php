@@ -87,7 +87,7 @@
                     </div>
                 </div>
             </dl>
-            <button class="mt-6 w-full rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.02]">Прокласти маршрут</button>
+            <a href="https://www.google.com/maps/dir/?api=1&destination={{ urlencode($place->address . ', Кропивницький') }}" target="_blank" rel="noopener noreferrer" class="mt-6 block w-full rounded-full bg-primary px-6 py-3 text-center text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.02]">Прокласти маршрут</a>
         </aside>
     </div>
 
