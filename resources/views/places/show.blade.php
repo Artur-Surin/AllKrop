@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @php
-    $place = App\Models\Place::where('slug', request()->route('slug'))->firstOrFail();
     $category = $place->category;
     $reviews = $place->reviews()->get();
     $avgRating = $place->average_rating;
