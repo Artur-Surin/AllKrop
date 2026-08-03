@@ -17,12 +17,8 @@
     </div>
 </section>
 
-@php
-    $stats = App\Services\ContentService::stats();
-    $landmarks = App\Services\ContentService::landmarks();
-@endphp
-
 <section class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
+    {{-- Stats — дані з контролера ($stats) --}}
     <dl class="grid grid-cols-2 gap-6 rounded-3xl border border-border bg-card p-8 sm:grid-cols-4">
         @foreach($stats as $s)
             <div>
@@ -123,7 +119,7 @@
         </div>
     </div>
 
-    {{-- Additional Info --}}
+    {{-- City Facts --}}
     <div class="mt-16 rounded-3xl border border-border bg-card p-8">
         <h2 class="font-serif text-2xl font-bold text-foreground">Місто в цифрах</h2>
         <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -176,40 +172,90 @@
         </div>
     </div>
 
-    {{-- Landmarks Section --}}
+    {{-- Landmarks Section with Alpine.js category filter --}}
     <div class="mt-16">
         <p class="text-sm font-medium text-primary">Туристичний гід</p>
         <h2 class="mt-2 text-balance font-serif text-3xl font-bold tracking-tight sm:text-4xl">Що подивитися в місті</h2>
         <p class="mt-3 max-w-2xl text-pretty text-muted-foreground leading-relaxed">Кропивницький пропонує безліч пам'яток — від історичних фортець та церков до сучасних музеїв та парків.</p>
     </div>
 
-    <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        @foreach($landmarks as $item)
-            <a href="{{ route('city.show', $item['slug']) }}" class="group relative overflow-hidden rounded-3xl border border-border">
-                <div class="relative aspect-[4/3]">
-                    <img src="{{ $item['image'] }}" alt="{{ $item['title'] }}" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" decoding="async">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" aria-hidden="true"></div>
-                    <div class="absolute inset-x-0 bottom-0 p-4">
-                        @if(isset($item['category']) && $item['category'])
-                            <span class="inline-block rounded-full bg-white/20 px-2 py-0.5 text-xs font-medium text-white backdrop-blur-sm">
-                                @if($item['category'] === 'theater') Театр
-                                @elseif($item['category'] === 'museum') Музей
-                                @elseif($item['category'] === 'park') Парк
-                                @elseif($item['category'] === 'church') Храм
-                                @elseif($item['category'] === 'history') Історія
-                                @endif
+    {{-- Alpine.js filter --}}
+    <div
+        x-data="{
+            active: 'all',
+            categories: [
+                { key: 'all',     label: 'Всі' },
+                { key: 'theater', label: 'Театри' },
+                { key: 'museum',  label: 'Музеї' },
+                { key: 'park',    label: 'Парки' },
+                { key: 'church',  label: 'Храми' },
+                { key: 'history', label: 'Історія' },
+            ]
+        }"
+        class="mt-8"
+    >
+        {{-- Filter tabs --}}
+        <div class="flex flex-wrap gap-2 mb-8" role="tablist" aria-label="Фільтр пам'яток за категорією">
+            <template x-for="cat in categories" :key="cat.key">
+                <button
+                    @click="active = cat.key"
+                    :class="active === cat.key
+                        ? 'bg-primary text-primary-foreground shadow-sm'
+                        : 'bg-card text-muted-foreground border border-border hover:border-primary hover:text-foreground'"
+                    class="rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-200"
+                    :aria-selected="active === cat.key"
+                    role="tab"
+                    x-text="cat.label"
+                ></button>
+            </template>
+        </div>
+
+        {{-- Landmark cards —  дані з контролера ($landmarks) --}}
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            @foreach($landmarks as $item)
+                <a
+                    href="{{ route('city.show', $item['slug']) }}"
+                    class="group relative overflow-hidden rounded-3xl border border-border transition-shadow duration-300 hover:shadow-lg"
+                    x-show="active === 'all' || active === '{{ $item['category'] ?? '' }}'"
+                    x-transition:enter="transition ease-out duration-200"
+                    x-transition:enter-start="opacity-0 scale-95"
+                    x-transition:enter-end="opacity-100 scale-100"
+                    x-transition:leave="transition ease-in duration-150"
+                    x-transition:leave-start="opacity-100 scale-100"
+                    x-transition:leave-end="opacity-0 scale-95"
+                    aria-label="{{ $item['title'] }}"
+                >
+                    <div class="relative aspect-[4/3]">
+                        <img
+                            src="{{ $item['image'] }}"
+                            alt="{{ $item['title'] }}"
+                            class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                            loading="lazy"
+                            decoding="async"
+                        >
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" aria-hidden="true"></div>
+                        <div class="absolute inset-x-0 bottom-0 p-4">
+                            @if(isset($item['category']) && $item['category'])
+                                <span class="inline-block rounded-full bg-white/20 px-2 py-0.5 text-xs font-medium text-white backdrop-blur-sm">
+                                    @if($item['category'] === 'theater') Театр
+                                    @elseif($item['category'] === 'museum') Музей
+                                    @elseif($item['category'] === 'park') Парк
+                                    @elseif($item['category'] === 'church') Храм
+                                    @elseif($item['category'] === 'history') Історія
+                                    @endif
+                                </span>
+                            @endif
+                            <h3 class="mt-2 text-balance font-serif text-lg font-bold text-white leading-tight">{{ $item['title'] }}</h3>
+                            <p class="mt-1 line-clamp-2 text-xs leading-relaxed text-white/80">{{ $item['description'] }}</p>
+                            <span class="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-white/90">
+                                Дізнатися більше
+                                <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                             </span>
-                        @endif
-                        <h3 class="mt-2 text-balance font-serif text-lg font-bold text-white leading-tight">{{ $item['title'] }}</h3>
-                        <p class="mt-1 line-clamp-2 text-xs leading-relaxed text-white/80">{{ $item['description'] }}</p>
-                        <span class="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-white/90">
-                            Дізнатися більше
-                            <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                        </span>
+                        </div>
                     </div>
-                </div>
-            </a>
-        @endforeach
+                </a>
+            @endforeach
+        </div>
     </div>
 </section>
 @endsection

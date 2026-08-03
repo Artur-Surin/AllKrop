@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Event as EventModel;
+use App\Models\Landmark as LandmarkModel;
 use App\Models\News as NewsModel;
 use Illuminate\Support\Facades\Cache;
 
@@ -422,7 +423,8 @@ class ContentService
         return array_filter(static::places(), fn ($p) => $p['categoryKey'] === $key);
     }
 
-    public static function landmarks(): array
+    // ── Хардкод-резерв пам'яток (використовується якщо БД порожня) ─────────────
+    private static function landmarksHardcoded(): array
     {
         return [
             [
@@ -540,9 +542,48 @@ class ContentService
         ];
     }
 
+    // ── Пам'ятки: DB з Cache + хардкод-резерв ──────────────────────────────────
+    public static function landmarks(): array
+    {
+        return Cache::remember('landmarks_v1', 3600, function () {
+            $dbLandmarks = LandmarkModel::orderBy('id')->get()->map(fn ($l) => [
+                'slug' => $l->slug,
+                'image' => $l->image,
+                'title' => $l->title,
+                'description' => $l->description,
+                'address' => $l->address,
+                'working_hours' => $l->working_hours,
+                'category' => $l->category,
+                'body' => $l->body ?? [],
+            ])->toArray();
+
+            if (! empty($dbLandmarks)) {
+                return $dbLandmarks;
+            }
+
+            return static::landmarksHardcoded();
+        });
+    }
+
     public static function getLandmark(string $slug): ?array
     {
-        foreach (static::landmarks() as $l) {
+        // Спочатку шукаємо в DB (без кешу для актуальності сторінки)
+        $db = LandmarkModel::where('slug', $slug)->first();
+        if ($db) {
+            return [
+                'slug' => $db->slug,
+                'image' => $db->image,
+                'title' => $db->title,
+                'description' => $db->description,
+                'address' => $db->address,
+                'working_hours' => $db->working_hours,
+                'category' => $db->category,
+                'body' => $db->body ?? [],
+            ];
+        }
+
+        // Резерв: хардкод
+        foreach (static::landmarksHardcoded() as $l) {
             if ($l['slug'] === $slug) {
                 return $l;
             }

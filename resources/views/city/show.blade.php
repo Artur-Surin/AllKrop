@@ -1,17 +1,34 @@
 @extends('layouts.app')
 
-@php
-    $slug = request()->route('slug');
-    $landmark = App\Services\ContentService::getLandmark($slug);
-    if (!$landmark) abort(404);
-@endphp
-
 @section('meta')
     <x-meta title="{{ $landmark['title'] }} — Кропивницький" description="{{ $landmark['description'] }}" image="{{ $landmark['image'] }}" />
 @endsection
 
 @section('pageTitle', $landmark['title'] . ' — Кропивницький')
 @section('pageDescription', $landmark['description'])
+
+{{-- Schema.org TouristAttraction JSON-LD --}}
+@section('json-ld')
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "TouristAttraction",
+    "name": "{{ addslashes($landmark['title']) }}",
+    "description": "{{ addslashes($landmark['description']) }}",
+    "image": "{{ url($landmark['image']) }}",
+    "url": "{{ url()->current() }}",
+    "touristType": "Cultural",
+    "isAccessibleForFree": true,
+    "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "{{ addslashes($landmark['address'] ?? '') }}",
+        "addressLocality": "Кропивницький",
+        "addressCountry": "UA"
+    }@if(isset($landmark['working_hours']) && $landmark['working_hours']),
+    "openingHours": "{{ addslashes($landmark['working_hours']) }}"@endif
+}
+</script>
+@endsection
 
 @section('content')
 <article class="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
@@ -69,6 +86,33 @@
         </div>
     @endif
 
+    {{-- Related Landmarks --}}
+    @if(!empty($related))
+        <div class="mt-12">
+            <h2 class="font-serif text-xl font-bold text-foreground">Інші визначні місця міста</h2>
+            <div class="mt-4 grid gap-4 sm:grid-cols-3">
+                @foreach($related as $rel)
+                    <a href="{{ route('city.show', $rel['slug']) }}" class="group relative overflow-hidden rounded-2xl border border-border transition-shadow duration-300 hover:shadow-md">
+                        <div class="relative aspect-[4/3]">
+                            <img
+                                src="{{ $rel['image'] }}"
+                                alt="{{ $rel['title'] }}"
+                                class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                loading="lazy"
+                                decoding="async"
+                            >
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" aria-hidden="true"></div>
+                            <div class="absolute inset-x-0 bottom-0 p-3">
+                                <h3 class="text-sm font-bold text-white leading-tight line-clamp-2">{{ $rel['title'] }}</h3>
+                            </div>
+                        </div>
+                    </a>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
+    {{-- Bottom navigation --}}
     <div class="mt-10 flex items-center justify-between rounded-2xl border border-border bg-card p-4">
         <a href="{{ route('city.index') }}" class="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5M12 19l-7-7 7-7"/></svg>

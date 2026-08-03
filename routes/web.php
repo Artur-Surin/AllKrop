@@ -30,7 +30,7 @@ Route::get('/places', [PlaceController::class, 'index'])->name('places.index');
 Route::get('/places/{place:slug}', [PlaceController::class, 'show'])->name('places.show');
 
 Route::get('/city', [CityController::class, 'index'])->name('city.index');
-Route::get('/city/{landmark:slug}', [CityController::class, 'show'])->name('city.show');
+Route::get('/city/{slug}', [CityController::class, 'show'])->name('city.show');
 
 Route::get('/contacts', [ContactController::class, 'index'])->name('contacts');
 Route::get('/services', [ServiceController::class, 'index'])->name('services');
