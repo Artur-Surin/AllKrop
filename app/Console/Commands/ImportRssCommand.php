@@ -53,6 +53,45 @@ class ImportRssCommand extends Command
 
     private function processFeed(RssParserService $parser, array $feed, string $type): void
     {
+        $feedType = $feed['type'] ?? 'rss';
+
+        if ($feedType === 'html') {
+            $html = $parser->fetchHtml($feed['url']);
+
+            $log = RssImportLog::create([
+                'feed_name' => $feed['name'],
+                'feed_type' => $type,
+                'items_found' => 0,
+                'items_imported' => 0,
+                'items_skipped' => 0,
+                'status' => 'success',
+            ]);
+
+            if (! $html) {
+                $log->update(['status' => 'error', 'error_message' => 'Failed to fetch HTML feed']);
+                $this->error("  Failed to fetch HTML: {$feed['url']}");
+                $this->errors++;
+
+                return;
+            }
+
+            $items = $parser->parseSuspilneKropyvnytskyiHtml($html, $feed['name']);
+
+            $log->update(['items_found' => count($items)]);
+            $this->line('  Found '.count($items).' items');
+
+            foreach ($items as $item) {
+                $this->importItem($type, $item);
+            }
+
+            $log->update([
+                'items_imported' => $this->imported,
+                'items_skipped' => $this->skipped,
+            ]);
+
+            return;
+        }
+
         $xml = $parser->fetchFeed($feed['url']);
 
         $log = RssImportLog::create([
@@ -94,7 +133,14 @@ class ImportRssCommand extends Command
     private function importItem(string $type, array $item): void
     {
         $modelClass = $type === 'news' ? News::class : Event::class;
-        $existing = $modelClass::where('slug', $item['slug'])->first();
+
+        $existing = $modelClass::where('slug', $item['slug'])
+            ->orWhere(function ($q) use ($item) {
+                if (! empty($item['source_url'])) {
+                    $q->where('source_url', $item['source_url']);
+                }
+            })
+            ->first();
 
         if ($existing) {
             $this->skipped++;
