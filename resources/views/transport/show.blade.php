@@ -1,17 +1,7 @@
 @extends('layouts.app')
 
 @php
-    $allRoutes = App\Services\ContentService::transportRoutes();
-    $route = null;
-    foreach ($allRoutes as $r) {
-        if ($r['number'] === $number) {
-            $route = $r;
-            break;
-        }
-    }
-    if (!$route) abort(404);
-
-    $similarRoutes = array_filter($allRoutes, fn($r) => $r['type'] === $route['type'] && $r['number'] !== $route['number']);
+    $stops = $route['stops'] ?? [$route['from'], $route['to']];
 
     $typeClass = match($route['type']) {
         'Тролейбус' => 'bg-blue-500/10 text-blue-500',
@@ -19,16 +9,6 @@
         'Автобус' => 'bg-amber-500/10 text-amber-500',
         'Маршрутка' => 'bg-purple-500/10 text-purple-500',
         default => 'bg-muted text-muted-foreground',
-    };
-
-    $stops = match($route['number']) {
-        '1' => ['Залізничний вокзал', 'вул. Ентузіастів', 'вул. Гоголя', 'пл. Героїв Майдану', 'вул. Тараса Карпи', 'вул. Космонавта Попова'],
-        '3' => ['Центр', 'вул. Велика Перспективна', 'вул. Дворцова', 'Ковалівський парк', 'Житломасив «Ковалівка»'],
-        '9' => ['Аеропорт', 'вул. Мурманська', 'вул. Пацаєва', 'вул. Шевченка', 'Центральна площа'],
-        '14' => ['Пацаєва', 'вул. Генерала Жадова', 'вул. Архітектора Снігурьова', 'вул. Комарова', 'Лікарня швидкої допомоги'],
-        '27' => ['Гірниче', 'вул. Генерала Алмазова', 'вул. Євгена Маланюка', 'вул. Ганни Барвінок', 'Центральний ринок'],
-        '150' => ['Кропивницький', 'Автовокзал', 'смт Новгородка', 'смт Бобринець', 'Знам\'янка'],
-        default => [$route['from'], 'Зупинка 2', 'Зупинка 3', 'Зупинка 4', $route['to']],
     };
 @endphp
 
@@ -40,6 +20,27 @@
 @section('pageDescription', 'Маршрут №' . $route['number'] . ' ' . $route['type'] . ': ' . $route['from'] . ' — ' . $route['to'])
 
 @section('content')
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BusTrip",
+  "name": "Маршрут №{{ $route['number'] }} ({{ $route['type'] }})",
+  "busNumber": "{{ $route['number'] }}",
+  "departureStop": {
+    "@type": "BusStop",
+    "name": "{{ $route['from'] }}"
+  },
+  "arrivalStop": {
+    "@type": "BusStop",
+    "name": "{{ $route['to'] }}"
+  },
+  "provider": {
+    "@type": "Organization",
+    "name": "Громадський транспорт Кропивницький"
+  }
+}
+</script>
+
 <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
     <x-breadcrumb :items="[['label' => 'Головна', 'href' => '/'], ['label' => 'Транспорт', 'href' => route('transport')], ['label' => 'Маршрут №' . $route['number']]]" />
 
@@ -78,7 +79,7 @@
 
             <a href="https://www.google.com/maps/dir/?api=1&destination={{ urlencode($route['from'] . ', Кропивницький') }}" target="_blank" rel="noopener noreferrer" class="mt-6 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.02]">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                Прокласти маршрут
+                Прокласти маршрут в Google Maps
             </a>
 
             <section class="mt-10">
@@ -114,7 +115,7 @@
 
         <aside class="w-full shrink-0 lg:w-80">
             <div class="rounded-2xl border border-border bg-card p-6">
-                <p class="font-serif text-lg font-semibold">Інформація</p>
+                <p class="font-serif text-lg font-semibold">Інформація про маршрут</p>
                 <dl class="mt-5 space-y-4">
                     <div class="flex items-start gap-3">
                         <svg class="mt-0.5 h-5 w-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>

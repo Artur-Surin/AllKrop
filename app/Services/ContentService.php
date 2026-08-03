@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Models\Event as EventModel;
 use App\Models\Landmark as LandmarkModel;
 use App\Models\News as NewsModel;
+use App\Models\TransportRoute;
 use Illuminate\Support\Facades\Cache;
 
 class ContentService
@@ -955,14 +956,33 @@ class ContentService
 
     public static function transportRoutes(): array
     {
-        return [
-            ['number' => '1', 'type' => 'Тролейбус', 'from' => 'Залізничний вокзал', 'to' => 'вул. Космонавта Попова', 'interval' => '8–12 хв'],
-            ['number' => '3', 'type' => 'Тролейбус', 'from' => 'Центр', 'to' => 'Житломасив «Ковалівка»', 'interval' => '10–15 хв'],
-            ['number' => '9', 'type' => 'Електробус', 'from' => 'Аеропорт', 'to' => 'Центральна площа', 'interval' => '12–18 хв'],
-            ['number' => '14', 'type' => 'Автобус', 'from' => 'Пацаєва', 'to' => 'Лікарня швидкої допомоги', 'interval' => '10–14 хв'],
-            ['number' => '27', 'type' => 'Маршрутка', 'from' => 'Гірниче', 'to' => 'Центральний ринок', 'interval' => '6–10 хв'],
-            ['number' => '150', 'type' => 'Автобус', 'from' => 'Кропивницький', 'to' => 'Знам\'янка', 'interval' => '20–30 хв'],
-        ];
+        return Cache::remember('transport_routes_v1', 3600, function () {
+            $routes = TransportRoute::all();
+            if ($routes->isNotEmpty()) {
+                return $routes->map(function ($route) {
+                    return [
+                        'id' => $route->id,
+                        'number' => (string) $route->number,
+                        'type' => $route->type,
+                        'from' => $route->route_from,
+                        'to' => $route->route_to,
+                        'route_from' => $route->route_from,
+                        'route_to' => $route->route_to,
+                        'interval' => $route->interval,
+                        'stops' => $route->stops_list,
+                    ];
+                })->toArray();
+            }
+
+            return [
+                ['number' => '1', 'type' => 'Тролейбус', 'from' => 'Залізничний вокзал', 'to' => 'вул. Космонавта Попова', 'route_from' => 'Залізничний вокзал', 'route_to' => 'вул. Космонавта Попова', 'interval' => '8–12 хв', 'stops' => ['Залізничний вокзал', 'вул. Ентузіастів', 'вул. Гоголя', 'пл. Героїв Майдану', 'вул. Тараса Карпи', 'вул. Космонавта Попова']],
+                ['number' => '3', 'type' => 'Тролейбус', 'from' => 'Центр', 'to' => 'Житломасив «Ковалівка»', 'route_from' => 'Центр', 'route_to' => 'Житломасив «Ковалівка»', 'interval' => '10–15 хв', 'stops' => ['Центр', 'вул. Велика Перспективна', 'вул. Дворцова', 'Ковалівський парк', 'Житломасив «Ковалівка»']],
+                ['number' => '9', 'type' => 'Електробус', 'from' => 'Аеропорт', 'to' => 'Центральна площа', 'route_from' => 'Аеропорт', 'route_to' => 'Центральна площа', 'interval' => '12–18 хв', 'stops' => ['Аеропорт', 'вул. Мурманська', 'вул. Пацаєва', 'вул. Шевченка', 'Центральна площа']],
+                ['number' => '14', 'type' => 'Автобус', 'from' => 'Пацаєва', 'to' => 'Лікарня швидкої допомоги', 'route_from' => 'Пацаєва', 'route_to' => 'Лікарня швидкої допомоги', 'interval' => '10–14 хв', 'stops' => ['Пацаєва', 'вул. Генерала Жадова', 'вул. Архітектора Снігурьова', 'вул. Комарова', 'Лікарня швидкої допомоги']],
+                ['number' => '27', 'type' => 'Маршрутка', 'from' => 'Гірниче', 'to' => 'Центральний ринок', 'route_from' => 'Гірниче', 'route_to' => 'Центральний ринок', 'interval' => '6–10 хв', 'stops' => ['Гірниче', 'вул. Генерала Алмазова', 'вул. Євгена Маланюка', 'вул. Ганни Барвінок', 'Центральний ринок']],
+                ['number' => '150', 'type' => 'Автобус', 'from' => 'Кропивницький', 'to' => 'Знам\'янка', 'route_from' => 'Кропивницький', 'route_to' => 'Знам\'янка', 'interval' => '20–30 хв', 'stops' => ['Кропивницький', 'Автовокзал', 'смт Новгородка', 'смт Бобринець', 'Знам\'янка']],
+            ];
+        });
     }
 
     public static function transportInfo(): array

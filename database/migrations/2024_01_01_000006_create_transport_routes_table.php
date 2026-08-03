@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('route_from');
             $table->string('route_to');
             $table->string('interval');
+            $table->json('stops')->nullable();
             $table->timestamps();
         });
     }

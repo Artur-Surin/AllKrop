@@ -8,19 +8,33 @@
 @section('pageDescription', 'Громадський транспорт міста Кропивницький: маршрути тролейбусів, електробусів та автобусів, електронний квиток і відстеження онлайн.')
 
 @section('content')
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "Громадський транспорт міста Кропивницький",
+  "description": "Перелік маршрутів тролейбусів, електробусів та автобусів міста Кропивницький",
+  "itemListElement": [
+    @foreach($routes as $index => $r)
+    {
+      "@type": "ListItem",
+      "position": {{ $index + 1 }},
+      "name": "Маршрут №{{ $r['number'] }} ({{ $r['type'] }}) — {{ $r['from'] ?? $r['route_from'] }} до {{ $r['to'] ?? $r['route_to'] }}",
+      "url": "{{ route('transport.show', $r['number']) }}"
+    }@if(!$loop->last),@endif
+    @endforeach
+  ]
+}
+</script>
+
 <section class="border-b border-border bg-secondary/40">
     <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
         <x-breadcrumb :items="[['label' => 'Головна', 'href' => '/'], ['label' => 'Транспорт']]" />
         <p class="mt-6 text-sm font-medium text-primary">Громадський транспорт</p>
         <h1 class="mt-2 text-balance font-serif text-4xl font-bold tracking-tight sm:text-5xl">Як пересуватися містом</h1>
-        <p class="mt-4 max-w-2xl text-pretty text-lg leading-relaxed text-muted-foreground">Мережа тролейбусів, електробусів та автобусів з\u2019єднує всі райони міста. Оплата карткою, відстеження онлайн та зручні пересадки.</p>
+        <p class="mt-4 max-w-2xl text-pretty text-lg leading-relaxed text-muted-foreground">Мережа тролейбусів, електробусів та автобусів з'єднує всі райони міста. Оплата карткою, відстеження онлайн та зручні пересадки.</p>
     </div>
 </section>
-
-@php
-    $info = App\Services\ContentService::transportInfo();
-    $routes = App\Services\ContentService::transportRoutes();
-@endphp
 
 <section class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
     <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">

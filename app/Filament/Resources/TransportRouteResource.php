@@ -61,6 +61,11 @@ class TransportRouteResource extends Resource
                         Forms\Components\TextInput::make('interval')
                             ->label('Інтервал')
                             ->required(),
+
+                        Forms\Components\TagsInput::make('stops')
+                            ->label('Зупинки')
+                            ->placeholder('Додати зупинку')
+                            ->columnSpanFull(),
                     ])
                     ->columns(2),
             ]);
