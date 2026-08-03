@@ -1,11 +1,14 @@
 @extends('layouts.app')
 
 @section('meta')
-    <x-meta title="Послуги — Кропивницький" description="Електронні послуги міста" image="/images/hero-city.png" />
+    <x-meta
+        title="Послуги міста Кропивницький — ЦНАП, довідки, комунальні"
+        description="Електронні послуги міста Кропивницький: довідки, реєстрація місця проживання, комунальні платежі, субсидії, звернення до міськради та громадський бюджет."
+        image="/images/hero-city.png"
+    />
 @endsection
 
-@section('pageTitle', 'Послуги — Кропивницький')
-@section('pageDescription', 'Електронні послуги міста Кропивницький: довідки, реєстрація, комунальні платежі, звернення до міськради та громадський бюджет.')
+@section('pageTitle', 'Послуги міста Кропивницький — ЦНАП, довідки, комунальні')
 
 @section('content')
 <section class="border-b border-border bg-secondary/40">
@@ -140,48 +143,34 @@
     </div>
 </section>
 
-{{-- Status Tracking --}}
+{{-- ЦНАП CTA --}}
 <section class="border-y border-border bg-secondary/40">
     <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
-        <div class="mx-auto max-w-xl text-center">
-            <h2 class="font-serif text-2xl font-bold tracking-tight sm:text-3xl">Відстежити заявку</h2>
-            <p class="mt-3 text-muted-foreground">Введіть номер заявки, щоб дізнатися її поточний статус.</p>
-            <div class="mt-6 flex flex-col gap-3 sm:flex-row">
-                <input
-                    id="trackingInput"
-                    type="text"
-                    placeholder="Номер заявки (напр. ZAY-2024-001234)"
-                    class="flex-1 rounded-full border border-border bg-card px-5 py-3 text-sm outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20"
-                />
-                <button
-                    id="trackBtn"
-                    class="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.02]"
+        <div class="mx-auto max-w-2xl text-center">
+            <span class="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+            </span>
+            <h2 class="mt-4 font-serif text-2xl font-bold tracking-tight sm:text-3xl">Центр надання адміністративних послуг</h2>
+            <p class="mt-3 text-muted-foreground">ЦНАП м. Кропивницький — вул. Велика Перспективна, 40. Тут ви можете отримати більшість адміністративних послуг особисто.</p>
+            <div class="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                <a
+                    href="tel:+380522334040"
+                    class="inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-3 text-sm font-semibold transition-colors hover:bg-secondary/80"
                 >
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    Пошук
-                </button>
+                    <svg class="h-4 w-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                    (052) 233-40-40
+                </a>
+                <a
+                    href="https://dozvil.kr-rada.gov.ua"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.02]"
+                >
+                    Офіційний сайт ЦНАП
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                </a>
             </div>
-            <div id="trackingResult" class="mt-6 hidden">
-                <div class="rounded-2xl border border-border bg-card p-6 text-left">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-muted-foreground">Заявка</p>
-                            <p id="trackingNumber" class="mt-1 font-semibold"></p>
-                        </div>
-                        <span id="trackingStatus" class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold"></span>
-                    </div>
-                    <div class="mt-5 flex items-center gap-2">
-                        <div class="tracking-step h-2 flex-1 rounded-full bg-primary"></div>
-                        <div id="trackStep2" class="tracking-step h-2 flex-1 rounded-full bg-border"></div>
-                        <div id="trackStep3" class="tracking-step h-2 flex-1 rounded-full bg-border"></div>
-                    </div>
-                    <div class="mt-2 flex justify-between text-xs text-muted-foreground">
-                        <span>Подано</span>
-                        <span>В роботі</span>
-                        <span>Готово</span>
-                    </div>
-                </div>
-            </div>
+            <p class="mt-4 text-xs text-muted-foreground">Пн–Пт: 08:00 – 17:00 &nbsp;·&nbsp; Вул. Велика Перспективна, 40</p>
         </div>
     </div>
 </section>
@@ -303,38 +292,6 @@
         filterServices();
     });
 
-    // Status Tracking
-    const trackBtn = document.getElementById('trackBtn');
-    const trackingInput = document.getElementById('trackingInput');
-    const trackingResult = document.getElementById('trackingResult');
-
-    trackBtn.addEventListener('click', function() {
-        const num = trackingInput.value.trim();
-        if (!num) return;
-
-        const statuses = [
-            { label: 'Очікує', step: 1, color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' },
-            { label: 'В роботі', step: 2, color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' },
-            { label: 'Готово', step: 3, color: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' },
-        ];
-        const s = statuses[Math.floor(Math.random() * 3)];
-
-        document.getElementById('trackingNumber').textContent = num;
-        const statusEl = document.getElementById('trackingStatus');
-        statusEl.textContent = s.label;
-        statusEl.className = `inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${s.color}`;
-
-        const steps = document.querySelectorAll('.tracking-step');
-        steps[0].className = 'tracking-step h-2 flex-1 rounded-full bg-primary';
-        steps[1].className = `tracking-step h-2 flex-1 rounded-full ${s.step >= 2 ? 'bg-primary' : 'bg-border'}`;
-        steps[2].className = `tracking-step h-2 flex-1 rounded-full ${s.step >= 3 ? 'bg-primary' : 'bg-border'}`;
-
-        trackingResult.classList.remove('hidden');
-    });
-
-    trackingInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') trackBtn.click();
-    });
 })();
 </script>
 @endsection

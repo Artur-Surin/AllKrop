@@ -1,11 +1,47 @@
 @extends('layouts.app')
 
 @section('meta')
-    <x-meta title="{{ $service['title'] }} — Послуги — Кропивницький" description="{{ $service['description'] }}" image="/images/hero-city.png" />
+    <x-meta
+        title="{{ $service['title'] }} — Послуги Кропивницького — ЦНАП"
+        description="{{ $service['description'] }} — вартість: {{ $service['cost'] }}, термін: {{ $service['timeline'] }}. Отримайте послугу в Кропивницькому."
+        image="/images/hero-city.png"
+    />
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "GovernmentService",
+        "name": "{{ addslashes($service['title']) }}",
+        "description": "{{ addslashes($service['description']) }}",
+        "serviceType": "{{ addslashes($service['group_category'] ?? '') }}",
+        "areaServed": {
+            "@type": "City",
+            "name": "Кропивницький",
+            "addressCountry": "UA"
+        },
+        "provider": {
+            "@type": "GovernmentOrganization",
+            "name": "{{ addslashes($institution['name'] ?? 'Кропивницька міська рада') }}",
+            "url": "https://kr-rada.gov.ua",
+            "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "{{ addslashes($institution['address'] ?? '') }}",
+                "addressLocality": "Кропивницький",
+                "addressCountry": "UA"
+            },
+            "telephone": "{{ addslashes($institution['phone'] ?? '') }}"
+        },
+        "offers": {
+            "@type": "Offer",
+            "price": "{{ $service['cost'] === 'Безкоштовно' ? '0' : '' }}",
+            "priceCurrency": "UAH",
+            "availability": "https://schema.org/InStock"
+        },
+        "url": "{{ url()->current() }}"
+    }
+    </script>
 @endsection
 
-@section('pageTitle', $service['title'] . ' — Послуги')
-@section('pageDescription', $service['description'])
+@section('pageTitle', $service['title'] . ' — Послуги Кропивницького')
 
 @section('content')
 <section class="border-b border-border bg-secondary/40">
