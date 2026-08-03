@@ -6,32 +6,62 @@ namespace App\Http\Controllers;
 
 use App\Models\Place;
 use App\Models\PlaceCategory;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 
 class PlaceController extends Controller
 {
     public function index(): View
     {
-        $places = Place::with('category')
-            ->select('id', 'slug', 'name', 'image', 'category_id', 'rating', 'area')
-            ->paginate(12);
-        $categories = PlaceCategory::all();
+        $activeCategoryKey = request('category');
 
-        return view('places.index', compact('places', 'categories'));
+        $query = Place::with('category')
+            ->where('is_published', true)
+            ->select('id', 'slug', 'name', 'image', 'category_id', 'rating', 'area');
+
+        if ($activeCategoryKey) {
+            $query->whereHas('category', fn ($q) => $q->where('key', $activeCategoryKey));
+        }
+
+        $places = $query->paginate(12)->withQueryString();
+        $categories = Cache::remember('place_categories', 3600, fn () => PlaceCategory::all());
+
+        return view('places.index', compact('places', 'categories', 'activeCategoryKey'));
     }
 
     public function show(Place $place): View
     {
+        if (! $place->is_published) {
+            abort(404);
+        }
+
+        // Eager load reviews один раз — без N+1 у шаблоні
+        $place->load('reviews');
+
         $category = $place->category;
 
-        return view('places.show', compact('place', 'category'));
+        $relatedPlaces = Place::with('category')
+            ->where('category_id', $place->category_id)
+            ->where('id', '!=', $place->id)
+            ->where('is_published', true)
+            ->select('id', 'slug', 'name', 'image', 'category_id', 'rating', 'area')
+            ->limit(3)
+            ->get();
+
+        return view('places.show', compact('place', 'category', 'relatedPlaces'));
     }
 
     public function category(string $key): View
     {
         $category = PlaceCategory::where('key', $key)->firstOrFail();
-        $places = Place::where('category_id', $category->id)->get();
-        $categories = PlaceCategory::all();
+
+        $places = Place::with('category')
+            ->where('category_id', $category->id)
+            ->where('is_published', true)
+            ->paginate(12)
+            ->withQueryString();
+
+        $categories = Cache::remember('place_categories', 3600, fn () => PlaceCategory::all());
 
         return view('places.category', compact('category', 'places', 'categories'));
     }

@@ -14,5 +14,5 @@
    - **Оптимізації та можливі покращення** (SEO, UX, Швидкодія, Монетизація).
 
 3. **Стек та принципи**:
-   - Стек: Laravel 11, PHP 8.4, MySQL, Redis, Livewire, Filament v3, Tailwind CSS, Alpine.js.
+   - Стек: Laravel 11, PHP 8.4, MySQL, Redis, Livewire, Filament v5, Tailwind CSS, Alpine.js.
    - Дотримуйся SOLID, DRY, KISS. Застосовуй зважений підхід без надмірного over-engineering.

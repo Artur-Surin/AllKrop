@@ -62,7 +62,7 @@ Redis
 
 Livewire
 
-Filament v3
+Filament v5
 
 Tailwind CSS
 

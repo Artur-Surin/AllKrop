@@ -8,6 +8,7 @@ use App\Models\Event;
 use App\Models\Landmark;
 use App\Models\News;
 use App\Models\Place;
+use App\Models\PlaceCategory;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 
@@ -30,8 +31,20 @@ class SitemapController extends Controller
                 $xml .= '</url>';
             }
 
+            // Place Categories
+            foreach (PlaceCategory::select('key', 'updated_at')->get() as $c) {
+                $xml .= '<url>';
+                $xml .= '<loc>'.$url.'/places/category/'.$c->key.'</loc>';
+                if ($c->updated_at) {
+                    $xml .= '<lastmod>'.$c->updated_at->format('Y-m-d').'</lastmod>';
+                }
+                $xml .= '<changefreq>weekly</changefreq>';
+                $xml .= '<priority>0.8</priority>';
+                $xml .= '</url>';
+            }
+
             // News
-            foreach (News::select('slug', 'updated_at')->get() as $n) {
+            foreach (News::where('is_published', true)->select('slug', 'updated_at')->get() as $n) {
                 $xml .= '<url>';
                 $xml .= '<loc>'.$url.'/news/'.$n->slug.'</loc>';
                 $xml .= '<lastmod>'.$n->updated_at->format('Y-m-d').'</lastmod>';
@@ -41,7 +54,7 @@ class SitemapController extends Controller
             }
 
             // Events
-            foreach (Event::select('slug', 'updated_at')->get() as $e) {
+            foreach (Event::where('is_published', true)->select('slug', 'updated_at')->get() as $e) {
                 $xml .= '<url>';
                 $xml .= '<loc>'.$url.'/events/'.$e->slug.'</loc>';
                 $xml .= '<lastmod>'.$e->updated_at->format('Y-m-d').'</lastmod>';
@@ -51,7 +64,7 @@ class SitemapController extends Controller
             }
 
             // Places
-            foreach (Place::select('slug', 'updated_at')->get() as $p) {
+            foreach (Place::where('is_published', true)->select('slug', 'updated_at')->get() as $p) {
                 $xml .= '<url>';
                 $xml .= '<loc>'.$url.'/places/'.$p->slug.'</loc>';
                 $xml .= '<lastmod>'.$p->updated_at->format('Y-m-d').'</lastmod>';

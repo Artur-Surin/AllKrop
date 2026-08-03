@@ -13,6 +13,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 
 class PlaceResource extends Resource
 {
@@ -32,6 +33,13 @@ class PlaceResource extends Resource
     {
         return $schema
             ->schema([
+                Forms\Components\TextInput::make('name')
+                    ->label('Назва')
+                    ->required()
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(fn ($state, callable $set) => $set('slug', Str::slug((string) $state)))
+                    ->columnSpanFull(),
+
                 Forms\Components\TextInput::make('slug')
                     ->label('Slug')
                     ->required()
@@ -39,15 +47,28 @@ class PlaceResource extends Resource
                     ->columnSpanFull(),
 
                 Forms\Components\FileUpload::make('image')
-                    ->label('Зображення')
+                    ->label('Головне зображення')
                     ->image()
+                    ->disk('public')
                     ->directory('places')
+                    ->visibility('public')
                     ->columnSpanFull(),
 
-                Forms\Components\TextInput::make('name')
-                    ->label('Назва')
-                    ->required()
+                Forms\Components\FileUpload::make('gallery')
+                    ->label('Галерея фотографій')
+                    ->helperText('Завантажте кілька фото закладу. Можна перетягувати для зміни порядку.')
+                    ->image()
+                    ->multiple()
+                    ->reorderable()
+                    ->disk('public')
+                    ->directory('places/gallery')
+                    ->visibility('public')
+                    ->maxFiles(20)
                     ->columnSpanFull(),
+
+                Forms\Components\Toggle::make('is_published')
+                    ->label('Опубліковано')
+                    ->default(true),
 
                 Forms\Components\Select::make('category_id')
                     ->label('Категорія')
@@ -68,50 +89,58 @@ class PlaceResource extends Resource
                     ->label('Адреса')
                     ->required(),
 
-                Forms\Components\TextInput::make('hours')
+                Forms\Components\Textarea::make('hours')
                     ->label('Години роботи')
+                    ->rows(4)
+                    ->helperText('Приклад: "11:00 - 22:00" або кожен день з нового рядка (наприклад: пн-сб: 11:00 - 22:00 \n нд: Закрито)')
                     ->required(),
 
                 Forms\Components\TextInput::make('phone')
                     ->label('Телефон')
                     ->required(),
 
-                Forms\Components\RichEditor::make('description')
-                    ->label('Опис')
-                    ->formatStateUsing(function ($state) {
+                Forms\Components\Textarea::make('description')
+                    ->label('Опис (кожен абзац — окремий рядок)')
+                    ->helperText('Кожен рядок тексту збережеться як окремий абзац на сайті')
+                    ->rows(8)
+                    ->formatStateUsing(function ($state): string {
                         if (is_array($state)) {
-                            if (! isset($state['type'])) {
-                                return implode('', array_map(function ($p) {
-                                    $p = trim((string) $p);
-                                    if ($p === '') {
-                                        return '';
-                                    }
-
-                                    return str_starts_with($p, '<') ? $p : "<p>{$p}</p>";
-                                }, $state));
-                            }
+                            return implode("\n", $state);
                         }
 
-                        return $state;
+                        return (string) ($state ?? '');
                     })
-                    ->dehydrateStateUsing(function ($state) {
+                    ->dehydrateStateUsing(function ($state): array {
                         if (empty($state)) {
                             return [];
                         }
-                        if (is_string($state)) {
-                            preg_match_all('/<p>(.*?)<\/p>/is', $state, $matches);
-                            if (! empty($matches[1])) {
-                                $paragraphs = array_map(fn ($p) => trim(strip_tags($p)), $matches[1]);
 
-                                return array_values(array_filter($paragraphs, fn ($p) => $p !== ''));
-                            }
-                            $lines = array_map('trim', explode("\n", strip_tags($state)));
+                        $lines = array_map('trim', explode("\n", (string) $state));
 
-                            return array_values(array_filter($lines, fn ($l) => $l !== ''));
-                        }
-
-                        return $state;
+                        return array_values(array_filter($lines, fn (string $l): bool => $l !== ''));
                     })
+                    ->columnSpanFull(),
+
+                Forms\Components\Repeater::make('features')
+                    ->label('Послуги та характеристики')
+                    ->helperText('Додайте групи послуг (наприклад: Кухня, Зал, Розваги) та їхні пункти')
+                    ->schema([
+                        Forms\Components\TextInput::make('group')
+                            ->label('Назва групи')
+                            ->required()
+                            ->placeholder('Наприклад: Кухня'),
+
+                        Forms\Components\TagsInput::make('items')
+                            ->label('Пункти')
+                            ->placeholder('Введіть пункт та натисніть Enter')
+                            ->required()
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(1)
+                    ->addActionLabel('Додати групу послуг')
+                    ->collapsible()
+                    ->cloneable()
+                    ->defaultItems(0)
                     ->columnSpanFull(),
             ]);
     }
@@ -120,11 +149,12 @@ class PlaceResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('slug')
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Назва')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('name')
+                Tables\Columns\TextColumn::make('slug')
                     ->searchable()
                     ->sortable(),
 
@@ -133,18 +163,29 @@ class PlaceResource extends Resource
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('rating')
+                    ->label('Рейтинг')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('area')
-                    ->label('Район')
+                Tables\Columns\IconColumn::make('is_published')
+                    ->label('Опубліковано')
+                    ->boolean()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
+                    ->label('Створено')
+                    ->dateTime('d.m.Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('created_at', 'desc')
+            ->filters([
+                Tables\Filters\SelectFilter::make('category_id')
+                    ->label('Категорія')
+                    ->relationship('category', 'label'),
+
+                Tables\Filters\TernaryFilter::make('is_published')
+                    ->label('Статус публікації'),
+            ])
             ->actions([
                 Actions\EditAction::make(),
                 Actions\DeleteAction::make(),

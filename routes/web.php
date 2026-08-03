@@ -41,7 +41,9 @@ Route::get('/transport', [TransportController::class, 'index'])->name('transport
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
 // Відгуки
-Route::post('/reviews/{place}', [ReviewController::class, 'store'])->name('reviews.store');
+Route::post('/reviews/{place}', [ReviewController::class, 'store'])
+    ->name('reviews.store')
+    ->middleware('throttle:3,1');
 
 Route::fallback(function () {
     return response()->view('404', [], 404);

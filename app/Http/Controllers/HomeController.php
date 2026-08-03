@@ -16,9 +16,24 @@ class HomeController extends Controller
 {
     public function index(): View
     {
-        $news = News::latest()->take(3)->get();
-        $events = Event::latest()->take(3)->get();
-        $places = Place::with('category')->take(3)->get();
+        $news = News::where('is_published', true)
+            ->select('id', 'slug', 'tag', 'title', 'excerpt', 'date', 'read_time', 'image')
+            ->latest()
+            ->take(3)
+            ->get();
+
+        $events = Event::where('is_published', true)
+            ->select('id', 'slug', 'title', 'date', 'category', 'place', 'image')
+            ->latest()
+            ->take(3)
+            ->get();
+
+        $places = Place::with('category')
+            ->where('is_published', true)
+            ->select('id', 'slug', 'name', 'image', 'category_id', 'rating', 'area')
+            ->take(3)
+            ->get();
+
         $landmarks = Landmark::take(2)->get();
         $stats = ContentService::stats();
         $categories = PlaceCategory::all();

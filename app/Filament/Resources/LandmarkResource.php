@@ -43,6 +43,7 @@ class LandmarkResource extends Resource
                         Forms\Components\FileUpload::make('image')
                             ->label('Зображення')
                             ->image()
+                            ->disk('public')
                             ->directory('landmarks')
                             ->columnSpanFull(),
 

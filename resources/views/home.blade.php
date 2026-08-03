@@ -212,24 +212,21 @@
                 </div>
 
                 <div class="mt-8 grid gap-6 md:grid-cols-3">
-                    @php
-                        $places = App\Services\ContentService::places();
-                    @endphp
-                    @foreach(array_slice($places, 0, 3) as $place)
-                        <a href="/places/{{ $place['slug'] }}" class="group overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-primary/40">
+                    @foreach($places as $place)
+                        <a href="{{ route('places.show', $place->slug) }}" class="group overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-primary/40">
                             <div class="relative aspect-[16/10] overflow-hidden">
-                                <img src="{{ $place['image'] }}" alt="{{ $place['name'] }}" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" decoding="async">
+                                <img src="{{ $place->image_url }}" alt="{{ $place->name }}" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" decoding="async">
                                 <span class="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-background/90 px-2.5 py-1 text-xs font-semibold backdrop-blur">
                                     <svg class="h-3.5 w-3.5 fill-accent text-accent" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                    {{ $place['rating'] }}
+                                    {{ $place->rating }}
                                 </span>
                             </div>
                             <div class="p-5">
-                                <p class="text-xs font-medium text-primary">{{ $place['category'] }}</p>
-                                <h3 class="mt-1.5 font-serif text-lg font-semibold">{{ $place['name'] }}</h3>
+                                <p class="text-xs font-medium text-primary">{{ $place->category?->label }}</p>
+                                <h3 class="mt-1.5 font-serif text-lg font-semibold">{{ $place->name }}</h3>
                                 <p class="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground">
                                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                                    {{ $place['area'] }}
+                                    {{ $place->area }}
                                 </p>
                             </div>
                         </a>

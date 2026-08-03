@@ -7,6 +7,9 @@ namespace App\Services;
 use App\Models\Event as EventModel;
 use App\Models\Landmark as LandmarkModel;
 use App\Models\News as NewsModel;
+use App\Models\Place as PlaceModel;
+use App\Models\PlaceCategory;
+use App\Models\ServiceGroup;
 use App\Models\TransportRoute;
 use Illuminate\Support\Facades\Cache;
 
@@ -41,311 +44,102 @@ class ContentService
 
     public static function news(): array
     {
-        $hardcoded = [
-            [
-                'slug' => 'onovlena-pishohidna-zona',
-                'tag' => 'Місто',
-                'title' => 'У центрі Кропивницького відкрили оновлену пішохідну зону',
-                'excerpt' => 'Реконструйована вулиця отримала нове освітлення, лавки та зелені насадження — простір для прогулянок і подій.',
-                'date' => '24 липня',
-                'read' => '3 хв',
-                'image' => '/images/hero-city.png',
-                'source' => null,
-                'source_url' => null,
-                'body' => [
-                    'Після кількох місяців робіт у самому серці міста офіційно відкрили оновлену пішохідну зону. Простір спроєктували так, щоб він був зручним для родин з дітьми, людей з інвалідністю та велосипедистів.',
-                    'Тут з\'явилося енергоефективне освітлення, десятки нових лавок, урни для роздільного збору відходів і понад сотня молодих дерев та кущів. Уздовж вулиці облаштували майданчики, де вихідними проходитимуть ярмарки та вуличні концерти.',
-                    'Міська рада повідомляє, що це лише перший етап оновлення центральної частини — наступного року роботи продовжать на прилеглих вулицях.',
-                ],
-            ],
-            [
-                'slug' => 'novi-marshruty-elektrobusiv',
-                'tag' => 'Транспорт',
-                'title' => 'Запускають нові маршрути електробусів між районами',
-                'excerpt' => 'Мешканці зможуть швидше діставатися з околиць до центру завдяки оновленому громадському транспорту.',
-                'date' => '22 липня',
-                'read' => '2 хв',
-                'image' => '/images/landmark-park.png',
-                'source' => null,
-                'source_url' => null,
-                'body' => [
-                    'Місто розширює мережу електротранспорту: на маршрути виходять нові електробуси, які з\'єднають віддалені житлові масиви з центром та залізничним вокзалом.',
-                    'Нові транспортні засоби мають низьку підлогу, обладнані місцями для маломобільних пасажирів, USB-зарядками та інформаційними табло.',
-                ],
-            ],
-            [
-                'slug' => 'muzej-prosto-neba',
-                'tag' => 'Культура',
-                'title' => 'Музей просто неба поповнився новою колекцією',
-                'excerpt' => 'Експозицію присвячено ремеслам краю — від гончарства до ткацтва. Вхід для школярів безкоштовний.',
-                'date' => '20 липня',
-                'read' => '4 хв',
-                'image' => '/images/place-gallery.png',
-                'source' => null,
-                'source_url' => null,
-                'body' => [
-                    'Музей просто неба відкрив нову постійну експозицію, присвячену традиційним ремеслам Центральної України.',
-                    'Для гостей проводитимуть майстер-класи, де можна власноруч спробувати сформувати глиняний глечик чи виткати смужку рушника.',
-                ],
-            ],
-            [
-                'slug' => 'festyval-upersonskoi-kuhni',
-                'tag' => 'Події',
-                'title' => 'Місто готується до великого гастрономічного фестивалю',
-                'excerpt' => 'Наприкінці серпня центральні вулиці перетворяться на майданчик локальної кухні та виноробства.',
-                'date' => '18 липня',
-                'read' => '3 хв',
-                'image' => '/images/event-market.png',
-                'source' => null,
-                'source_url' => null,
-                'body' => [
-                    'Наприкінці серпня в Кропивницькому відбудеться масштабний гастрономічний фестиваль.',
-                    'Гості зможуть скуштувати страви регіональної кухні, відвідати дегустації та кулінарні шоу від відомих шефів.',
-                ],
-            ],
-            [
-                'slug' => 'sportyvnyj-maidanchyk',
-                'tag' => 'Спорт',
-                'title' => 'У парку відкрили сучасний спортивний майданчик',
-                'excerpt' => 'Безкоштовний простір для воркауту, скейтингу та ігрових видів спорту.',
-                'date' => '15 липня',
-                'read' => '2 хв',
-                'image' => '/images/landmark-park.png',
-                'source' => null,
-                'source_url' => null,
-                'body' => [
-                    'У міському парку завершили будівництво сучасного спортивного майданчика.',
-                    'Покриття виконане з ударопоглинальних матеріалів, а територія обладнана освітленням для вечірніх тренувань.',
-                ],
-            ],
-            [
-                'slug' => 'volonterskyj-hab',
-                'tag' => 'Спільнота',
-                'title' => 'У місті запрацював новий волонтерський хаб',
-                'excerpt' => 'Простір об\'єднує ініціативи мешканців — від допомоги військовим до екологічних проєктів.',
-                'date' => '12 липня',
-                'read' => '3 хв',
-                'image' => '/images/place-cafe.png',
-                'source' => null,
-                'source_url' => null,
-                'body' => [
-                    'Новий волонтерський хаб став центром об\'єднання громадських ініціатив міста.',
-                    'Простір відкритий для всіх, хто хоче долучитися до волонтерства.',
-                ],
-            ],
-        ];
+        return Cache::remember('content_news_list', 1800, function () {
+            $items = NewsModel::where('is_published', true)->latest()->get();
 
-        $dbNews = NewsModel::latest()->get()->map(function ($item) {
-            return [
-                'slug' => $item->slug,
-                'tag' => $item->tag,
-                'title' => $item->title,
-                'excerpt' => $item->excerpt,
-                'date' => $item->date,
-                'read' => $item->read_time,
-                'image' => $item->image,
-                'source' => $item->source,
-                'source_url' => $item->source_url,
-                'body' => $item->body,
-            ];
-        })->toArray();
-
-        $all = array_merge($dbNews, $hardcoded);
-
-        $slugs = [];
-        $unique = [];
-        foreach ($all as $item) {
-            if (! in_array($item['slug'], $slugs)) {
-                $slugs[] = $item['slug'];
-                $unique[] = $item;
-            }
-        }
-
-        return $unique;
-    }
-
-    public static function getNews(string $slug): ?array
-    {
-        $news = NewsModel::where('slug', $slug)->first();
-        if ($news) {
-            return [
-                'slug' => $news->slug,
-                'tag' => $news->tag,
-                'title' => $news->title,
-                'excerpt' => $news->excerpt,
-                'date' => $news->date,
-                'read' => $news->read_time,
-                'image' => $news->image,
-                'source' => $news->source,
-                'source_url' => $news->source_url,
-                'body' => $news->body,
-            ];
-        }
-
-        $all = static::news();
-        foreach ($all as $item) {
-            if ($item['slug'] === $slug) {
-                return $item;
-            }
-        }
-
-        return null;
+            return $items->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'slug' => $item->slug,
+                    'tag' => $item->tag,
+                    'title' => $item->title,
+                    'excerpt' => $item->excerpt,
+                    'date' => $item->date,
+                    'read' => $item->read_time,
+                    'image' => $item->image,
+                    'source' => $item->source,
+                    'source_url' => $item->source_url,
+                    'body' => $item->body,
+                ];
+            })->toArray();
+        });
     }
 
     public static function events(): array
     {
-        $hardcoded = [
-            [
-                'slug' => 'litnij-muzychnyj-vechir',
-                'image' => '/images/event-concert.png',
-                'title' => 'Літній музичний вечір на площі',
-                'category' => 'Концерт',
-                'date' => '27 ЛИП',
-                'time' => '19:00',
-                'place' => 'Центральна площа',
-                'price' => 'Безкоштовно',
-                'source' => null,
-                'source_url' => null,
-                'description' => [
-                    'Проведіть теплий літній вечір під живу музику просто неба. На головній сцені міста виступлять місцеві гурти та запрошені виконавці.',
-                    'На гостей чекає зона фудкорту з локальними стравами та напоями, а також простір для відпочинку родинами.',
-                ],
-            ],
-            [
-                'slug' => 'yarmarok-remesel',
-                'image' => '/images/event-market.png',
-                'title' => 'Ярмарок ремесел та локальної їжі',
-                'category' => 'Ярмарок',
-                'date' => '02 СЕР',
-                'time' => '10:00',
-                'place' => 'Ковалівський парк',
-                'price' => 'Вхід вільний',
-                'source' => null,
-                'source_url' => null,
-                'description' => [
-                    'Великий ярмарок збере майстрів з усього регіону: кераміка, вишивка, вироби з дерева та шкіри.',
-                    'Упродовж дня — майстер-класи, дитячі активності та музичний супровід.',
-                ],
-            ],
-            [
-                'slug' => 'premiera-u-teatri',
-                'image' => '/images/landmark-theatre.png',
-                'title' => 'Прем\'єра у драматичному театрі',
-                'category' => 'Театр',
-                'date' => '09 СЕР',
-                'time' => '18:30',
-                'place' => 'Театр ім. Кропивницького',
-                'price' => 'від 150 ₴',
-                'source' => null,
-                'source_url' => null,
-                'description' => [
-                    'Прем\'єрна вистава сезону від трупи одного з найстаріших театрів України.',
-                    'Квитки доступні онлайн та в касі театру.',
-                ],
-            ],
-            [
-                'slug' => 'nichnyj-kinopokaz',
-                'image' => '/images/hero-city.png',
-                'title' => 'Нічний кінопоказ просто неба',
-                'category' => 'Кіно',
-                'date' => '16 СЕР',
-                'time' => '21:00',
-                'place' => 'Дендропарк',
-                'price' => '120 ₴',
-                'source' => null,
-                'source_url' => null,
-                'description' => [
-                    'Затишний кінопоказ під зорями у міському дендропарку.',
-                    'Перед показом — коротка лекція про історію кіно від міського кіноклубу.',
-                ],
-            ],
-            [
-                'slug' => 'vystavka-suchasnoho-mystetstva',
-                'image' => '/images/place-gallery.png',
-                'title' => 'Виставка сучасного мистецтва',
-                'category' => 'Виставка',
-                'date' => '23 СЕР',
-                'time' => '12:00',
-                'place' => 'Галерея сучасного мистецтва',
-                'price' => '80 ₴',
-                'source' => null,
-                'source_url' => null,
-                'description' => [
-                    'Нова виставка об\'єднує роботи молодих митців регіону.',
-                    'Для відвідувачів проводитимуть кураторські екскурсії щовихідних.',
-                ],
-            ],
-            [
-                'slug' => 'simejnyj-den-u-parku',
-                'image' => '/images/landmark-park.png',
-                'title' => 'Сімейний день у парку',
-                'category' => 'Родина',
-                'date' => '30 СЕР',
-                'time' => '11:00',
-                'place' => 'Ковалівський парк',
-                'price' => 'Безкоштовно',
-                'source' => null,
-                'source_url' => null,
-                'description' => [
-                    'День активного відпочинку для всієї родини: спортивні ігри, творчі майстерні, анімація для дітей.',
-                    'Захід безкоштовний, реєстрація не потрібна.',
-                ],
-            ],
-        ];
+        return Cache::remember('content_events_list', 1800, function () {
+            $items = EventModel::where('is_published', true)->latest()->get();
 
-        $dbEvents = EventModel::latest()->get()->map(function ($item) {
-            return [
-                'slug' => $item->slug,
-                'image' => $item->image,
-                'title' => $item->title,
-                'category' => $item->category,
-                'date' => $item->date,
-                'time' => $item->time,
-                'place' => $item->place,
-                'price' => $item->price,
-                'source' => $item->source,
-                'source_url' => $item->source_url,
-                'description' => $item->description,
-            ];
-        })->toArray();
-
-        $all = array_merge($dbEvents, $hardcoded);
-
-        $slugs = [];
-        $unique = [];
-        foreach ($all as $item) {
-            if (! in_array($item['slug'], $slugs)) {
-                $slugs[] = $item['slug'];
-                $unique[] = $item;
-            }
-        }
-
-        return $unique;
+            return $items->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'slug' => $item->slug,
+                    'image' => $item->image,
+                    'title' => $item->title,
+                    'category' => $item->category,
+                    'date' => $item->date,
+                    'time' => $item->time,
+                    'place' => $item->place,
+                    'price' => $item->price,
+                    'description' => $item->description,
+                ];
+            })->toArray();
+        });
     }
 
-    public static function getEvent(string $slug): ?array
+    public static function places(): array
     {
-        $event = EventModel::where('slug', $slug)->first();
-        if ($event) {
-            return [
-                'slug' => $event->slug,
-                'image' => $event->image,
-                'title' => $event->title,
-                'category' => $event->category,
-                'date' => $event->date,
-                'time' => $event->time,
-                'place' => $event->place,
-                'price' => $event->price,
-                'source' => $event->source,
-                'source_url' => $event->source_url,
-                'description' => $event->description,
-            ];
-        }
+        return Cache::remember('content_places_list', 1800, function () {
+            $items = PlaceModel::with('category')->where('is_published', true)->get();
 
-        $all = static::events();
-        foreach ($all as $e) {
-            if ($e['slug'] === $slug) {
-                return $e;
+            return $items->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'slug' => $item->slug,
+                    'image' => $item->image_url,
+                    'name' => $item->name,
+                    'category' => $item->category?->label ?? '',
+                    'category_key' => $item->category?->key ?? '',
+                    'rating' => $item->rating,
+                    'area' => $item->area,
+                    'address' => $item->address,
+                    'hours' => $item->hours,
+                    'phone' => $item->phone,
+                    'description' => $item->description,
+                    'features' => $item->features,
+                ];
+            })->toArray();
+        });
+    }
+
+    public static function landmarks(): array
+    {
+        return Cache::remember('content_landmarks_list', 3600, function () {
+            $items = LandmarkModel::all();
+
+            return $items->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'slug' => $item->slug,
+                    'title' => $item->title,
+                    'category' => $item->category,
+                    'year' => $item->year,
+                    'architect' => $item->architect,
+                    'address' => $item->address,
+                    'image' => $item->image,
+                    'description' => $item->description,
+                    'facts' => $item->facts,
+                ];
+            })->toArray();
+        });
+    }
+
+    public static function getLandmark(string $slug): ?array
+    {
+        $landmarks = static::landmarks();
+        foreach ($landmarks as $landmark) {
+            if ($landmark['slug'] === $slug) {
+                return $landmark;
             }
         }
 
@@ -355,470 +149,52 @@ class ContentService
     public static function enterpriseCategories(): array
     {
         return Cache::remember('enterpriseCategories', 3600, function () {
-            return [
-                ['key' => 'food', 'label' => 'Кафе та ресторани', 'icon' => 'UtensilsCrossed', 'description' => 'Кав\'ярні, ресторани, піцерії та заклади вуличної їжі міста.'],
-                ['key' => 'shops', 'label' => 'Магазини та торгівля', 'icon' => 'ShoppingBag', 'description' => 'Торгові центри, книгарні, супермаркети та фірмові магазини.'],
-                ['key' => 'culture', 'label' => 'Культура та дозвілля', 'icon' => 'Drama', 'description' => 'Театри, галереї, кінотеатри та концертні майданчики.'],
-                ['key' => 'beauty', 'label' => 'Краса та здоров\'я', 'icon' => 'HeartPulse', 'description' => 'Салони краси, спа, стоматології та медичні центри.'],
-                ['key' => 'education', 'label' => 'Освіта', 'icon' => 'GraduationCap', 'description' => 'Університети, школи, курси та дитячі розвиткові центри.'],
-                ['key' => 'auto', 'label' => 'Авто та сервіс', 'icon' => 'Car', 'description' => 'Автосервіси, СТО, автомийки та шиномонтаж.'],
-                ['key' => 'finance', 'label' => 'Фінанси та послуги', 'icon' => 'Briefcase', 'description' => 'Бізнес-центри, юридичні та фінансові компанії.'],
-                ['key' => 'industry', 'label' => 'Промисловість', 'icon' => 'Factory', 'description' => 'Виробничі підприємства, фабрики та заводи міста.'],
-            ];
+            return PlaceCategory::all()->map(function ($cat) {
+                return [
+                    'key' => $cat->key,
+                    'label' => $cat->label,
+                    'icon' => $cat->icon,
+                    'description' => $cat->description,
+                ];
+            })->toArray();
         });
-    }
-
-    public static function getCategory(string $key): ?array
-    {
-        foreach (static::enterpriseCategories() as $cat) {
-            if ($cat['key'] === $key) {
-                return $cat;
-            }
-        }
-
-        return null;
     }
 
     public static function categoryCount(string $key): int
     {
-        return count(array_filter(static::places(), fn ($p) => $p['categoryKey'] === $key));
-    }
-
-    public static function places(): array
-    {
-        return [
-            ['slug' => 'kavyarnya-ranok', 'image' => '/images/place-cafe.png', 'name' => 'Кав\'ярня «Ранок»', 'category' => 'Кава та сніданки', 'categoryKey' => 'food', 'rating' => '4.9', 'area' => 'Центр', 'address' => 'вул. Велика Перспективна, 24', 'hours' => '08:00 – 21:00', 'phone' => '+38 (052) 233-12-24', 'description' => ['Затишна кав\'ярня в самому центрі міста зі спеціальною кавою, авторськими десертами та ситними сніданками.', 'Тут зручно попрацювати за ноутбуком, зустрітися з друзями або просто насолодитися ранковою чашкою кави.']],
-            ['slug' => 'restoran-inhul', 'image' => '/images/place-restaurant.png', 'name' => 'Ресторан «Інгул»', 'category' => 'Українська кухня', 'categoryKey' => 'food', 'rating' => '4.8', 'area' => 'Набережна', 'address' => 'вул. Набережна, 5', 'hours' => '11:00 – 23:00', 'phone' => '+38 (052) 240-05-05', 'description' => ['Ресторан сучасної української кухні з панорамним видом на річку.', 'Ідеальне місце для родинної вечері, ділової зустрічі чи святкування.']],
-            ['slug' => 'restoran-teras', 'image' => '/images/place-restaurant.png', 'name' => 'Ресторан «Тераса»', 'category' => 'Європейська кухня', 'categoryKey' => 'food', 'rating' => '4.6', 'area' => 'Історичний квартал', 'address' => 'вул. Дворцова, 22', 'hours' => '12:00 – 23:00', 'phone' => '+38 (052) 240-22-22', 'description' => ['Ресторан європейської кухні з відкритою терасою.', 'Сезонне меню, велика винна карта та жива музика щоп\'ятниці.']],
-            ['slug' => 'pitseriya-vohnyshche', 'image' => '/images/place-cafe.png', 'name' => 'Піцерія «Вогнище»', 'category' => 'Піца на дровах', 'categoryKey' => 'food', 'rating' => '4.7', 'area' => 'Ковалівка', 'address' => 'вул. Космонавта Попова, 8', 'hours' => '10:00 – 22:00', 'phone' => '+38 (052) 255-18-18', 'description' => ['Сімейна піцерія з піцою на дровах та великою дитячою зоною.', 'Швидка доставка містом та вигідні комбо-набори.']],
-            ['slug' => 'tts-plaza', 'image' => '/images/cat-shops.png', 'name' => 'ТЦ «Плаза»', 'category' => 'Торговий центр', 'categoryKey' => 'shops', 'rating' => '4.5', 'area' => 'Центр', 'address' => 'вул. Велика Перспективна, 60', 'hours' => '10:00 – 21:00', 'phone' => '+38 (052) 260-00-60', 'description' => ['Найбільший торгово-розважальний центр міста.', 'Тут зібрані популярні бренди під одним дахом.']],
-            ['slug' => 'knygarnya-slovo', 'image' => '/images/place-cafe.png', 'name' => 'Книгарня «Слово»', 'category' => 'Книги та кава', 'categoryKey' => 'shops', 'rating' => '4.8', 'area' => 'Центр', 'address' => 'вул. Велика Перспективна, 40', 'hours' => '09:00 – 20:00', 'phone' => '+38 (052) 233-40-40', 'description' => ['Сучасна книгарня з великим вибором української літератури.', 'При книгарні працює кав\'ярня та простір для зустрічей.']],
-            ['slug' => 'market-svizhyj', 'image' => '/images/cat-shops.png', 'name' => 'Маркет «Свіжий»', 'category' => 'Продукти', 'categoryKey' => 'shops', 'rating' => '4.4', 'area' => 'Пацаєва', 'address' => 'вул. Пацаєва, 14', 'hours' => '08:00 – 22:00', 'phone' => '+38 (052) 271-14-14', 'description' => ['Супермаркет свіжих продуктів із власною пекарнею.', 'Щоденні акції та зона готової їжі.']],
-            ['slug' => 'galereya-mystetstva', 'image' => '/images/place-gallery.png', 'name' => 'Галерея сучасного мистецтва', 'category' => 'Галерея', 'categoryKey' => 'culture', 'rating' => '4.7', 'area' => 'Історичний квартал', 'address' => 'вул. Дворцова, 17', 'hours' => '10:00 – 19:00', 'phone' => '+38 (052) 233-17-17', 'description' => ['Простір сучасного мистецтва з регулярними виставками.', 'Галерея підтримує молодих авторів регіону.']],
-            ['slug' => 'teatr-kropyvnytskoho', 'image' => '/images/landmark-theatre.png', 'name' => 'Драматичний театр', 'category' => 'Театр', 'categoryKey' => 'culture', 'rating' => '4.9', 'area' => 'Центр', 'address' => 'вул. Дворцова, 4', 'hours' => 'Каса 10:00 – 19:00', 'phone' => '+38 (052) 224-04-04', 'description' => ['Один із найстаріших театрів України.', 'У репертуарі — класичні та сучасні постановки.']],
-            ['slug' => 'kinoteatr-zoryanyj', 'image' => '/images/hero-city.png', 'name' => 'Кінотеатр «Зоряний»', 'category' => 'Кіно', 'categoryKey' => 'culture', 'rating' => '4.5', 'area' => 'Ковалівка', 'address' => 'вул. Космонавта Попова, 20', 'hours' => '09:00 – 00:00', 'phone' => '+38 (052) 255-20-20', 'description' => ['Сучасний кінотеатр із залами Dolby Atmos.', 'Онлайн-бронювання квитків.']],
-            ['slug' => 'salon-lyuks', 'image' => '/images/cat-beauty.png', 'name' => 'Салон краси «Люкс»', 'category' => 'Салон краси', 'categoryKey' => 'beauty', 'rating' => '4.9', 'area' => 'Центр', 'address' => 'вул. Шевченка, 12', 'hours' => '09:00 – 20:00', 'phone' => '+38 (052) 233-90-12', 'description' => ['Повний спектр послуг: перукарня, манікюр, косметологія.', 'Онлайн-запис та професійна косметика.']],
-            ['slug' => 'spa-harmoniya', 'image' => '/images/cat-beauty.png', 'name' => 'СПА-центр «Гармонія»', 'category' => 'СПА та велнес', 'categoryKey' => 'beauty', 'rating' => '4.8', 'area' => 'Набережна', 'address' => 'вул. Набережна, 18', 'hours' => '10:00 – 22:00', 'phone' => '+38 (052) 240-18-18', 'description' => ['Простір релаксу з масажем, сауною та водними процедурами.', 'Комплексні програми відновлення.']],
-            ['slug' => 'stomatologiya-denta', 'image' => '/images/cat-beauty.png', 'name' => 'Стоматологія «Дента»', 'category' => 'Стоматологія', 'categoryKey' => 'beauty', 'rating' => '4.9', 'area' => 'Центр', 'address' => 'вул. Велика Перспективна, 33', 'hours' => '09:00 – 19:00', 'phone' => '+38 (052) 233-33-33', 'description' => ['Сучасна стоматологічна клініка з цифровою діагностикою.', 'Дитяча стоматологія та імплантація.']],
-            ['slug' => 'universytet', 'image' => '/images/cat-education.png', 'name' => 'Центральноукраїнський університет', 'category' => 'Вища освіта', 'categoryKey' => 'education', 'rating' => '4.7', 'area' => 'Центр', 'address' => 'вул. Шевченка, 1', 'hours' => '08:00 – 18:00', 'phone' => '+38 (052) 224-01-01', 'description' => ['Провідний заклад вищої освіти регіону.', 'Сучасні лабораторії та програми міжнародного обміну.']],
-            ['slug' => 'shkola-speak-up', 'image' => '/images/cat-education.png', 'name' => 'Школа англійської «Speak Up»', 'category' => 'Мовні курси', 'categoryKey' => 'education', 'rating' => '4.8', 'area' => 'Центр', 'address' => 'вул. Дворцова, 30', 'hours' => '10:00 – 20:00', 'phone' => '+38 (052) 233-30-30', 'description' => ['Курси англійської для дітей і дорослих.', 'Групові й індивідуальні заняття.']],
-            ['slug' => 'avtoservis-motors', 'image' => '/images/cat-auto.png', 'name' => 'Автосервіс «Моторс»', 'category' => 'СТО', 'categoryKey' => 'auto', 'rating' => '4.7', 'area' => 'Промзона', 'address' => 'вул. Мурманська, 5', 'hours' => '08:00 – 20:00', 'phone' => '+38 (052) 277-05-05', 'description' => ['Повний цикл обслуговування авто.', 'Оригінальні запчастини та гарантія.']],
-            ['slug' => 'biznes-tsentr-portal', 'image' => '/images/cat-finance.png', 'name' => 'Бізнес-центр «Портал»', 'category' => 'Оренда офісів', 'categoryKey' => 'finance', 'rating' => '4.6', 'area' => 'Центр', 'address' => 'вул. Велика Перспективна, 1', 'hours' => '09:00 – 19:00', 'phone' => '+38 (052) 233-01-01', 'description' => ['Сучасний бізнес-центр класу B+.', 'Коворкінг та переговорні кімнати.']],
-            ['slug' => 'mebleva-fabryka-dub', 'image' => '/images/cat-industry.png', 'name' => 'Меблева фабрика «Дуб»', 'category' => 'Виробництво меблів', 'categoryKey' => 'industry', 'rating' => '4.7', 'area' => 'Промзона', 'address' => 'вул. Мурманська, 20', 'hours' => '08:00 – 17:00', 'phone' => '+38 (052) 277-20-20', 'description' => ['Виробництво меблів на замовлення з натуральних матеріалів.', 'Власне конструкторське бюро та доставка.']],
-        ];
-    }
-
-    public static function getPlace(string $slug): ?array
-    {
-        foreach (static::places() as $p) {
-            if ($p['slug'] === $slug) {
-                return $p;
-            }
-        }
-
-        return null;
-    }
-
-    public static function getPlacesByCategory(string $key): array
-    {
-        return array_filter(static::places(), fn ($p) => $p['categoryKey'] === $key);
-    }
-
-    // ── Хардкод-резерв пам'яток (використовується якщо БД порожня) ─────────────
-    private static function landmarksHardcoded(): array
-    {
-        return [
-            [
-                'slug' => 'fortetsya-svyatoyi-elysavety',
-                'image' => '/images/hero-city.png',
-                'title' => 'Фортеця святої Єлисавети',
-                'description' => 'Руїни історичної фортеці XVIII століття — місце народження міста.',
-                'address' => 'вул. Гоголя, 68',
-                'working_hours' => 'Цілодобово (огляд ззовні)',
-                'category' => 'history',
-                'body' => [
-                    'Фортеця святої Єлисавети (Фортеця Святої Єлизавети) — фортифікаційна споруда, закладена 1754 року на березі річки Інгул указом імператриці Єлизавети Петрівни як база для наступу на османську фортецю в Криму.',
-                    'Фортеця мала форму неправильного шестикутника з чотирма бастіонами та оточувала простір площею понад 40 гектарів.',
-                    'Сьогодні від фортеці збереглися фрагменти земляних валів та ровів. На території розташовані меморіали та пам\'ятні знаки.',
-                ],
-            ],
-            [
-                'slug' => 'dramatychnyj-teatr',
-                'image' => '/images/landmark-theatre.png',
-                'title' => 'Драматичний театр ім. М. Л. Кропивницького',
-                'description' => 'Найстаріший професійний театр України, заснований 1882 року.',
-                'address' => 'вул. Дворцова, 4',
-                'working_hours' => 'Каса: 10:00 – 19:00',
-                'category' => 'theater',
-                'body' => [
-                    'Кропивницький драматичний театр — один із найстаріших театрів України. Його заснував Марко Лукич Кропивницький у 1882 році.',
-                    'Театр став першою професійною українською сценою, де грали вистави рідною мовою.',
-                    'Сьогодні театр носить ім\'я свого засновника і продовжує традиції українського сценічного мистецтва.',
-                ],
-            ],
-            [
-                'slug' => 'dendropark',
-                'image' => '/images/landmark-park.png',
-                'title' => 'Кропивницький дендропарк',
-                'description' => 'Зелений оазис міста з унікальною колекцією дерев та кущів.',
-                'address' => 'вул. Велика Перспективна, 37',
-                'working_hours' => '06:00 – 23:00',
-                'category' => 'park',
-                'body' => [
-                    'Кропивницький дендропарк — один з найстаріших та найгарніших парків Центральної України.',
-                    'На території парку понад 300 видів дерев та кущів, серед яких рідкісні екземпляри.',
-                    'У парку регулярно проходять фестивалі, ярмарки, концерти просто неба та сімейні заходи.',
-                ],
-            ],
-            [
-                'slug' => 'velika-perspektyvna',
-                'image' => '/images/hero-city.png',
-                'title' => 'Велика Перспективна вулиця',
-                'description' => 'Головна пішохідна артерія міста з історичними будівлями.',
-                'address' => 'вул. Велика Перспективна',
-                'working_hours' => 'Цілодобово',
-                'category' => 'history',
-                'body' => [
-                    'Велика Перспективна — центральна вулиця Кропивницького та одна з найдовших пішохідних зон в Україні.',
-                    'Вулиця забудована архітектурними пам\'ятками XIX–XX століть.',
-                    'Оновлена пішохідна зона отримала сучасне освітлення та ландшафтний дизайн.',
-                ],
-            ],
-            [
-                'slug' => 'khudozhnij-muzej',
-                'image' => '/images/place-gallery.png',
-                'title' => 'Кропивницький обласний художній музей',
-                'description' => 'Один з найстаріших музеїв мистецтва в Україні.',
-                'address' => 'вул. Велика Перспективна, 61',
-                'working_hours' => 'Вт–Нд: 10:00 – 18:00',
-                'category' => 'museum',
-                'body' => [
-                    'Художній музей заснований у 1899 році. Його колекція налічує понад 12 000 експонатів.',
-                    'Експозиція охоплює твори українського та європейського мистецтва XVII–XXI століть.',
-                    'Серед скарбів — роботи Іллі Рєпіна, Миколи Пимоненка, Казимира Малевича.',
-                ],
-            ],
-            [
-                'slug' => 'krayeznavchyj-muzej',
-                'image' => '/images/place-gallery.png',
-                'title' => 'Кропивницький краєзнавчий музей',
-                'description' => 'Музей історії та природи краю від стародавніх часів.',
-                'address' => 'вул. Тараса Шевченка, 18',
-                'working_hours' => 'Вт–Нд: 09:00 – 17:00',
-                'category' => 'museum',
-                'body' => [
-                    'Краєзнавчий музей заснований у 1885 році. Експозиція зберігає понад 90 000 експонатів.',
-                    'Археологічні знахідки, етнографічні колекції, документи та предмети побуту.',
-                    'Особливу цінність мають колекції козацької доби та народного мистецтва.',
-                ],
-            ],
-            [
-                'slug' => 'tserkva-rizdva-blahoslovennoi-divy-mariyi',
-                'image' => '/images/place-gallery.png',
-                'title' => 'Церква Різдва Пресвятої Богородиці',
-                'description' => 'Старовинна православна церква з багатою історією.',
-                'address' => 'вул. Архієрейська, 24',
-                'working_hours' => 'Щодня: 07:00 – 19:00',
-                'category' => 'church',
-                'body' => [
-                    'Церква Різдва Пресвятої Богородиці — одна з найстаріших культових споруд міста.',
-                    'Архітектура поєднує елементи класицизму та бароко.',
-                    'Усередині збереглися оригінальні ікони XVIII–XIX століть.',
-                ],
-            ],
-            [
-                'slug' => 'miskij-sad',
-                'image' => '/images/landmark-park.png',
-                'title' => 'Міський сад',
-                'description' => 'Затишний парк у самому центрі міста.',
-                'address' => 'вул. Велика Перспективна, 10',
-                'working_hours' => 'Цілодобово',
-                'category' => 'park',
-                'body' => [
-                    'Міський сад — компактний, але дуже затишний парк у серці Кропивницького.',
-                    'Тут висаджені вікові липи, каштани та клени.',
-                    'У парку регулярно проходять міні-концерти, виставки та дитячі свята.',
-                ],
-            ],
-        ];
-    }
-
-    // ── Пам'ятки: DB з Cache + хардкод-резерв ──────────────────────────────────
-    public static function landmarks(): array
-    {
-        return Cache::remember('landmarks_v1', 3600, function () {
-            $dbLandmarks = LandmarkModel::orderBy('id')->get()->map(fn ($l) => [
-                'slug' => $l->slug,
-                'image' => $l->image,
-                'title' => $l->title,
-                'description' => $l->description,
-                'address' => $l->address,
-                'working_hours' => $l->working_hours,
-                'category' => $l->category,
-                'body' => $l->body ?? [],
-            ])->toArray();
-
-            if (! empty($dbLandmarks)) {
-                return $dbLandmarks;
-            }
-
-            return static::landmarksHardcoded();
+        return Cache::remember("categoryCount_{$key}", 1800, function () use ($key) {
+            return PlaceModel::whereHas('category', fn ($q) => $q->where('key', $key))
+                ->where('is_published', true)
+                ->count();
         });
-    }
-
-    public static function getLandmark(string $slug): ?array
-    {
-        // Спочатку шукаємо в DB (без кешу для актуальності сторінки)
-        $db = LandmarkModel::where('slug', $slug)->first();
-        if ($db) {
-            return [
-                'slug' => $db->slug,
-                'image' => $db->image,
-                'title' => $db->title,
-                'description' => $db->description,
-                'address' => $db->address,
-                'working_hours' => $db->working_hours,
-                'category' => $db->category,
-                'body' => $db->body ?? [],
-            ];
-        }
-
-        // Резерв: хардкод
-        foreach (static::landmarksHardcoded() as $l) {
-            if ($l['slug'] === $slug) {
-                return $l;
-            }
-        }
-
-        return null;
     }
 
     public static function serviceGroups(): array
     {
-        return [
-            [
-                'category' => 'Документи та реєстрація',
-                'icon' => 'FileText',
-                'items' => [
-                    [
-                        'slug' => 'dovidky-ta-vytiahky',
-                        'icon' => 'FileText',
-                        'title' => 'Довідки та витяги',
-                        'description' => 'Замовлення довідок про склад сім\'ї, місце проживання.',
-                        'action' => 'Дізнатися більше',
-                        'url' => 'https://kr-rada.gov.ua',
-                        'steps' => [
-                            'Зверніться до Кропивницької міської ради або ЦНАП',
-                            'Оберіть тип довідки зі списку',
-                            'Надайте необхідні документи',
-                            'Отримайте готову довідку в установі',
-                        ],
-                        'documents' => ['Паспорт громадянина України', 'ІПН (ідентифікаційний код)', 'Копія свідоцтва про народження (для дітей)'],
-                        'cost' => 'Безкоштовно',
-                        'timeline' => '1–3 робочих дні',
-                        'delivery' => 'В офісі',
-                        'faq' => [
-                            ['q' => 'Які довідки можна отримати?', 'a' => 'Довідка про склад сім\'ї, довідка про реєстрацію місця проживання, витяг з реєстру територіальної громади.'],
-                            ['q' => 'Скільки коштує отримання довідки?', 'a' => 'Всі базові довідки видаються безкоштовно. Термінове оформлення також безкоштовне.'],
-                            ['q' => 'Чи можна отримати довідку для іншої особи?', 'a' => 'Ні, довідки видаються особисто заявнику або уповноваженій особі за нотаріальною довіреністю.'],
-                        ],
-                    ],
-                    [
-                        'slug' => 'reiestratsiia-mistcya-prozhuvannya',
-                        'icon' => 'Home',
-                        'title' => 'Реєстрація місця проживання',
-                        'description' => 'Реєстрація місця проживання в ЦНАПі.',
-                        'action' => 'Дізнатися більше',
-                        'url' => 'https://kr-rada.gov.ua',
-                        'steps' => [
-                            'Зверніться до Центру надання адміністративних послуг',
-                            'Надайте необхідні документи',
-                            'Заповніть заяву на місці',
-                            'Отримайте штамп про реєстрацію',
-                        ],
-                        'documents' => ['Паспорт громадянина', 'Ордер / договір оренди / документ на право власності', 'Заява за встановленою формою'],
-                        'cost' => 'Безкоштовно',
-                        'timeline' => '1–5 робочих днів',
-                        'delivery' => 'В офісі (ЦНАП)',
-                        'faq' => [
-                            ['q' => 'Скільки часу діє реєстрація?', 'a' => 'Реєстрація діє безстроково до зняття з реєстрації або зміни місця проживання.'],
-                            ['q' => 'Чи потрібно виписуватися з попереднього місця?', 'a' => 'Так, реєстрація в новому місці автоматично знімає з попереднього.'],
-                        ],
-                    ],
-                    [
-                        'slug' => 'reiestratsiia-novonarodzhenykh',
-                        'icon' => 'Baby',
-                        'title' => 'Реєстрація новонароджених',
-                        'description' => 'Оформлення документів за принципом «єМалятко».',
-                        'action' => 'Дізнатися більше',
-                        'url' => 'https://kr-rada.gov.ua',
-                        'steps' => [
-                            'Зареєструйте народження дитини в пологовому будинку',
-                            'Зверніться до ЦНАП з пакетом документів',
-                            'Оберіть послуги: свідоцтво, реєстрація, допомога',
-                            'Отримайте готові документи в ЦНАПі або поштою',
-                        ],
-                        'documents' => ['Свідоцтво про народження (з пологового)', 'Паспорти батьків', 'Свідоцтво про шлюб (якщо є)'],
-                        'cost' => 'Безкоштовно',
-                        'timeline' => '1–10 робочих днів',
-                        'delivery' => 'В офісі / Поштою',
-                        'faq' => [
-                            ['q' => 'Що входить у пакет «єМалятко»?', 'a' => 'Реєстрація народження, свідоцтво про народження, реєстрація місця проживання, призначення допомоги при народженні.'],
-                            ['q' => 'Скільки часу маю на оформлення?', 'a' => 'Протягом перших 3 місяців після народження дитини для отримання повної допомоги.'],
-                        ],
-                    ],
-                ],
-            ],
-            [
-                'category' => 'Житло та комунальні послуги',
-                'icon' => 'Receipt',
-                'items' => [
-                    [
-                        'slug' => 'oplata-komunalnykh',
-                        'icon' => 'Receipt',
-                        'title' => 'Оплата комунальних',
-                        'description' => 'Сплата за воду, тепло, вивіз сміття онлайн.',
-                        'action' => 'Дізнатися більше',
-                        'url' => 'https://privat24.ua',
-                        'steps' => [
-                            'Скористайтеся онлайн-сервісами оплати (Privat24, Mono, Ощадбанк)',
-                            'Уведіть особовий рахунок з квитанції',
-                            'Перевірте нараховані суми за період',
-                            'Підтвердіть платіж',
-                            'Завантажте або збережіть квитанцію',
-                        ],
-                        'documents' => ['Особовий рахунок (знаходиться в квитанції)', 'Банківська картка'],
-                        'cost' => 'Згідно тарифів',
-                        'timeline' => 'Онлайн-оплата: миттєво',
-                        'delivery' => 'Онлайн',
-                        'faq' => [
-                            ['q' => 'Чи можна сплатити за кілька місяців одразу?', 'a' => 'Так, ви можете сплатити заборгованість за будь-який період.'],
-                            ['q' => 'Що робити, якщо сума нарахування здається невірною?', 'a' => 'Зверніться до свого ЖЕКу або на гарячу лінію 1580 для з\'ясування.'],
-                        ],
-                    ],
-                    [
-                        'slug' => 'zayavka-na-remont',
-                        'icon' => 'Wrench',
-                        'title' => 'Заявка на ремонт',
-                        'description' => 'Повідомити про ями на дорогах, зламане освітлення.',
-                        'action' => 'Дізнатися більше',
-                        'url' => 'https://kr-rada.gov.ua',
-                        'steps' => [
-                            'Зверніться до комунального підприємства за адресою проблеми',
-                            'Опишіть проблему та вкажіть адресу',
-                            'Прикріпіть фотографію (за бажанням)',
-                            'Отримайте номер заявки для відстеження',
-                            'Стежте за статусом виконання',
-                        ],
-                        'documents' => ['Не потрібно'],
-                        'cost' => 'Безкоштовно',
-                        'timeline' => 'Відповідь: 1–5 робочих днів',
-                        'delivery' => 'В офісі / Телефоном',
-                        'faq' => [
-                            ['q' => 'Як довго розглядаються заявки?', 'a' => 'Стандартний термін — до 5 робочих днів. Термінові проблеми (аварії) — до 24 годин.'],
-                            ['q' => 'Чи можна подати анонімну заявку?', 'a' => 'Так, але анонімні заявки розглядаються у загальному черзі без пріоритету.'],
-                        ],
-                    ],
-                    [
-                        'slug' => 'subsydii-ta-pilhy',
-                        'icon' => 'HandCoins',
-                        'title' => 'Субсидії та пільги',
-                        'description' => 'Оформлення житлових субсидій.',
-                        'action' => 'Дізнатися більше',
-                        'url' => 'https://ekrada.ks.ua',
-                        'steps' => [
-                            'Перевірте свою кандидатуру на сайті Мінсоцполітики',
-                            'Підготуйте необхідні документи',
-                            'Зверніться до Управління соціального захисту',
-                            'Очікуйте рішення комісії',
-                            'Отримайте нарахування на особовий рахунок',
-                        ],
-                        'documents' => ['Заява встановленої форми', 'Декларація про доходи', 'Довідки про доходи всіх членів сім\'ї', 'Документи на житло'],
-                        'cost' => 'Безкоштовно',
-                        'timeline' => '15–30 робочих днів',
-                        'delivery' => 'В офісі',
-                        'faq' => [
-                            ['q' => 'Хто має право на субсидію?', 'a' => 'Сім\'ї, які витрачають більше 15% сукупного доходу на оплату ЖКП (для пенсіонерів — 10%).'],
-                            ['q' => 'На який термін призначається субсидія?', 'a' => 'На опалювальний сезон або на 12 місяців для тих, хто не має доходів.'],
-                        ],
-                    ],
-                ],
-            ],
-            [
-                'category' => 'Громада та звернення',
-                'icon' => 'MessageSquare',
-                'items' => [
-                    [
-                        'slug' => 'zvernennia-do-miskrady',
-                        'icon' => 'MessageSquare',
-                        'title' => 'Звернення до міськради',
-                        'description' => 'Офіційні звернення, петиції та запити.',
-                        'action' => 'Дізнатися більше',
-                        'url' => 'https://kr-rada.gov.ua',
-                        'steps' => [
-                            'Оберіть тип звернення (запит, петиція, пропозиція)',
-                            'Зверніться до Кропивницької міської ради',
-                            'Надайте документи та опис питання',
-                            'Отримайте реєстраційний номер',
-                            'Стежте за статусом розгляду',
-                        ],
-                        'documents' => ['Не потрібно (для петицій — мінімум 250 підписів)'],
-                        'cost' => 'Безкоштовно',
-                        'timeline' => 'Відповідь: до 15 робочих днів',
-                        'delivery' => 'В офісі / Поштою',
-                        'faq' => [
-                            ['q' => 'Скільки підписів потрібно для петиції?', 'a' => '250 підписів мешканців міста для розгляду міською радою.'],
-                            ['q' => 'Чи можна звернутися анонімно?', 'a' => 'Анонімні звернення приймаються, але пріоритет розгляду нижчий.'],
-                        ],
-                    ],
-                    [
-                        'slug' => 'hromadskyj-biudzhet',
-                        'icon' => 'Vote',
-                        'title' => 'Громадський бюджет',
-                        'description' => 'Подання та голосування за проєкти.',
-                        'action' => 'Дізнатися більше',
-                        'url' => 'https://budget.kr-rada.gov.ua',
-                        'steps' => [
-                            'Ознайомтеся з правилами участі на сайті',
-                            'Підготуйте проєкт з бюджетом та обґрунтуванням',
-                            'Подайте проєкт до встановленого дедлайну',
-                            'Просувайте свій проєкт серед мешканців',
-                            'Голосуйте за кращі проєкти',
-                        ],
-                        'documents' => ['Опис проєкту', 'Кошторис', 'Зображення або візуалізація'],
-                        'cost' => 'Безкоштовно',
-                        'timeline' => 'Календар: подання до жовтня, голосування — листопад',
-                        'delivery' => 'Онлайн',
-                        'faq' => [
-                            ['q' => 'Який максимальний бюджет проєкту?', 'a' => 'Малі проєкти — до 500 000 грн, великі — до 2 000 000 грн.'],
-                            ['q' => 'Хто може голосувати?', 'a' => 'Всі мешканці міста від 14 років з електронним підписом.'],
-                        ],
-                    ],
-                    [
-                        'slug' => 'kontakt-tsentr-1580',
-                        'icon' => 'Phone',
-                        'title' => 'Контакт-центр 1580',
-                        'description' => 'Цілодобова гаряча лінія міста.',
-                        'action' => 'Зателефонувати',
-                        'url' => 'tel:+3805221580',
-                        'steps' => [
-                            'Зателефонуйте на номер 1580 (з мобільного)',
-                            'Оберіть тему звернення через автоінформатор',
-                            'Залиште звернення оператору',
-                            'Отримайте номер заявки для відстеження',
-                        ],
-                        'documents' => ['Не потрібно'],
-                        'cost' => 'Безкоштовно (з мобільних та стаціонарних)',
-                        'timeline' => 'Консультація: одразу. Заявка: 1–10 робочих днів',
-                        'delivery' => 'Телефоном',
-                        'faq' => [
-                            ['q' => 'Як працює контакт-центр?', 'a' => 'Цілодобово, щодня. Оператори приймають звернення та направляють їх у відповідні структури.'],
-                            ['q' => 'Чи можна звернутися електронною поштою?', 'a' => 'Так, пишіть на info@kropyvnytskyi.gov.ua з темою звернення.'],
-                        ],
-                    ],
-                ],
-            ],
-        ];
+        return Cache::remember('serviceGroups', 3600, function () {
+            // Джерело послуг можна брати з ServiceGroup моделей
+            return ServiceGroup::with('items')->get()->map(function ($group) {
+                return [
+                    'category' => $group->category,
+                    'items' => $group->items->map(function ($item) {
+                        return [
+                            'slug' => $item->slug,
+                            'icon' => $item->icon,
+                            'title' => $item->title,
+                            'description' => $item->description,
+                            'action' => $item->action,
+                            'url' => $item->url,
+                            'steps' => $item->steps,
+                            'documents' => $item->documents,
+                            'cost' => $item->cost,
+                            'timeline' => $item->timeline,
+                            'delivery' => $item->delivery,
+                            'faq' => $item->faq,
+                        ];
+                    })->toArray(),
+                ];
+            })->toArray();
+        });
     }
 
     public static function serviceCategories(): array
@@ -869,48 +245,6 @@ class ContentService
                 'url' => 'https://dozvil.kr-rada.gov.ua',
                 'hours' => 'Пн–Пт: 08:00 – 17:00',
             ],
-            'oplata-komunalnykh' => [
-                'name' => 'Онлайн-сервіси оплати комунальних послуг',
-                'address' => 'Онлайн (Privat24, Mono, ОщадБанк)',
-                'phone' => '+38 (052) 233-40-40',
-                'url' => 'https://privat24.ua',
-                'hours' => 'Цілодобово',
-            ],
-            'zayavka-na-remont' => [
-                'name' => 'Комунальне підприємство міста',
-                'address' => 'вул. Велика Перспективна, 41',
-                'phone' => '+380 (522) 15-80',
-                'url' => 'https://dozvil.kr-rada.gov.ua',
-                'hours' => 'Пн–Пт: 08:00 – 17:00',
-            ],
-            'subsydii-ta-pilhy' => [
-                'name' => 'Управління соціального захисту населення',
-                'address' => 'вул. Тараса Шевченка, 21',
-                'phone' => '+38 (052) 224-21-21',
-                'url' => 'https://ekrada.ks.ua',
-                'hours' => 'Пн–Пт: 09:00 – 16:00',
-            ],
-            'zvernennia-do-miskrady' => [
-                'name' => 'Кропивницька міська рада',
-                'address' => 'вул. Велика Перспективна, 41',
-                'phone' => '+380 (522) 30-71-00',
-                'url' => 'https://kr-rada.gov.ua',
-                'hours' => 'Пн–Пт: 09:00 – 17:00',
-            ],
-            'hromadskyj-biudzhet' => [
-                'name' => 'Департамент фінансів та бюджетного планування',
-                'address' => 'вул. Велика Перспективна, 41',
-                'phone' => '+380 (522) 30-71-00',
-                'url' => 'https://budget.kr-rada.gov.ua',
-                'hours' => 'Пн–Пт: 09:00 – 17:00',
-            ],
-            'kontakt-tsentr-1580' => [
-                'name' => 'Контакт-центр міста',
-                'address' => 'вул. Велика Перспективна, 41',
-                'phone' => '1580',
-                'url' => 'tel:+3805221580',
-                'hours' => 'Цілодобово',
-            ],
         ];
 
         return $institutions[$serviceKey] ?? null;
@@ -935,22 +269,6 @@ class ContentService
                 'lat' => 48.5200,
                 'lng' => 32.2350,
             ],
-            [
-                'name' => 'Управління соціального захисту',
-                'address' => 'вул. Тараса Шевченка, 21',
-                'hours' => 'Пн–Пт: 09:00 – 16:00',
-                'phone' => '+38 (052) 224-21-21',
-                'lat' => 48.5105,
-                'lng' => 32.2580,
-            ],
-            [
-                'name' => 'Відділ реєстрації — Фортечний',
-                'address' => 'вул. Гоголя, 76',
-                'hours' => 'Пн–Пт: 08:00 – 15:30',
-                'phone' => '+38 (052) 222-76-76',
-                'lat' => 48.5050,
-                'lng' => 32.2480,
-            ],
         ];
     }
 
@@ -974,14 +292,7 @@ class ContentService
                 })->toArray();
             }
 
-            return [
-                ['number' => '1', 'type' => 'Тролейбус', 'from' => 'Залізничний вокзал', 'to' => 'вул. Космонавта Попова', 'route_from' => 'Залізничний вокзал', 'route_to' => 'вул. Космонавта Попова', 'interval' => '8–12 хв', 'stops' => ['Залізничний вокзал', 'вул. Ентузіастів', 'вул. Гоголя', 'пл. Героїв Майдану', 'вул. Тараса Карпи', 'вул. Космонавта Попова']],
-                ['number' => '3', 'type' => 'Тролейбус', 'from' => 'Центр', 'to' => 'Житломасив «Ковалівка»', 'route_from' => 'Центр', 'route_to' => 'Житломасив «Ковалівка»', 'interval' => '10–15 хв', 'stops' => ['Центр', 'вул. Велика Перспективна', 'вул. Дворцова', 'Ковалівський парк', 'Житломасив «Ковалівка»']],
-                ['number' => '9', 'type' => 'Електробус', 'from' => 'Аеропорт', 'to' => 'Центральна площа', 'route_from' => 'Аеропорт', 'route_to' => 'Центральна площа', 'interval' => '12–18 хв', 'stops' => ['Аеропорт', 'вул. Мурманська', 'вул. Пацаєва', 'вул. Шевченка', 'Центральна площа']],
-                ['number' => '14', 'type' => 'Автобус', 'from' => 'Пацаєва', 'to' => 'Лікарня швидкої допомоги', 'route_from' => 'Пацаєва', 'route_to' => 'Лікарня швидкої допомоги', 'interval' => '10–14 хв', 'stops' => ['Пацаєва', 'вул. Генерала Жадова', 'вул. Архітектора Снігурьова', 'вул. Комарова', 'Лікарня швидкої допомоги']],
-                ['number' => '27', 'type' => 'Маршрутка', 'from' => 'Гірниче', 'to' => 'Центральний ринок', 'route_from' => 'Гірниче', 'route_to' => 'Центральний ринок', 'interval' => '6–10 хв', 'stops' => ['Гірниче', 'вул. Генерала Алмазова', 'вул. Євгена Маланюка', 'вул. Ганни Барвінок', 'Центральний ринок']],
-                ['number' => '150', 'type' => 'Автобус', 'from' => 'Кропивницький', 'to' => 'Знам\'янка', 'route_from' => 'Кропивницький', 'route_to' => 'Знам\'янка', 'interval' => '20–30 хв', 'stops' => ['Кропивницький', 'Автовокзал', 'смт Новгородка', 'смт Бобринець', 'Знам\'янка']],
-            ];
+            return [];
         });
     }
 

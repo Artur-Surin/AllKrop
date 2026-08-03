@@ -64,21 +64,21 @@
 
 <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
     <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div class="flex flex-wrap gap-2" id="filter-buttons">
-            <button data-filter="all" class="filter-btn rounded-full px-4 py-2 text-sm font-medium transition-colors bg-primary text-primary-foreground">Усі</button>
+        <div class="flex flex-wrap gap-2">
+            <a href="{{ route('places.index') }}" class="rounded-full px-4 py-2 text-sm font-medium transition-colors {{ empty($activeCategoryKey) ? 'bg-primary text-primary-foreground' : 'border border-border bg-card text-muted-foreground hover:text-foreground' }}">Усі</a>
             @foreach($categories as $cat)
-                <button data-filter="{{ $cat['key'] }}" class="filter-btn rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">{{ $cat['label'] }}</button>
+                <a href="{{ route('places.index', ['category' => $cat['key']]) }}" class="rounded-full px-4 py-2 text-sm font-medium transition-colors {{ ($activeCategoryKey === $cat['key']) ? 'bg-primary text-primary-foreground' : 'border border-border bg-card text-muted-foreground hover:text-foreground' }}">{{ $cat['label'] }}</a>
             @endforeach
         </div>
     </div>
 
-    <p class="mt-6 text-sm text-muted-foreground">Знайдено підприємств: <span class="font-semibold text-foreground" id="places-count">{{ $places->total() }}</span></p>
+    <p class="mt-6 text-sm text-muted-foreground">Знайдено підприємств: <span class="font-semibold text-foreground">{{ $places->total() }}</span></p>
 
-    <div class="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3" id="places-grid">
+    <div class="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         @foreach($places as $place)
-            <a href="{{ route('places.show', $place->slug) }}" data-category="{{ $place->category?->key ?? '' }}" data-name="{{ mb_strtolower($place->name) }}" class="place-card group overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-primary/40">
+            <a href="{{ route('places.show', $place->slug) }}" class="group overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-primary/40">
                 <div class="relative aspect-[16/10] overflow-hidden">
-                    <img src="{{ $place->image }}" alt="{{ $place->name }}" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" decoding="async">
+                    <img src="{{ $place->image_url }}" alt="{{ $place->name }}" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" decoding="async">
                     <span class="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-background/90 px-2.5 py-1 text-xs font-semibold backdrop-blur">
                         <svg class="h-3.5 w-3.5 fill-accent text-accent" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                         {{ $place->rating }}
@@ -96,6 +96,7 @@
         @endforeach
     </div>
 
+    @if($places->hasPages())
     <div class="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
         <a href="{{ $places->previousPageUrl() }}" class="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground {{ $places->onFirstPage() ? 'pointer-events-none opacity-50' : '' }}">
             « Попередня
@@ -109,39 +110,6 @@
             Наступна »
         </a>
     </div>
+    @endif
 </div>
-@endsection
-
-@section('scripts')
-<script>
-    const filterBtns = document.querySelectorAll('#filter-buttons .filter-btn');
-    const grid = document.getElementById('places-grid');
-    const countEl = document.getElementById('places-count');
-    let activeFilter = 'all';
-
-    function filterPlaces() {
-        const cards = grid.querySelectorAll('.place-card');
-        let visible = 0;
-        cards.forEach(card => {
-            const cat = card.dataset.category;
-            const show = activeFilter === 'all' || cat === activeFilter;
-            card.style.display = show ? '' : 'none';
-            if (show) visible++;
-        });
-        countEl.textContent = visible;
-    }
-
-    filterBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            activeFilter = btn.dataset.filter;
-            filterBtns.forEach(b => {
-                b.classList.remove('bg-primary', 'text-primary-foreground');
-                b.classList.add('border', 'border-border', 'bg-card', 'text-muted-foreground');
-            });
-            btn.classList.add('bg-primary', 'text-primary-foreground');
-            btn.classList.remove('border', 'border-border', 'bg-card', 'text-muted-foreground');
-            filterPlaces();
-        });
-    });
-</script>
 @endsection
