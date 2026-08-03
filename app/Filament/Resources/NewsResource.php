@@ -6,13 +6,13 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\NewsResource\Pages;
 use App\Models\News;
+use Filament\Actions;
 use Filament\Forms;
-use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Actions;
-use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Str;
 
 class NewsResource extends Resource
@@ -23,9 +23,9 @@ class NewsResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Новини';
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Контент';
+    protected static string|\UnitEnum|null $navigationGroup = 'Контент';
 
-    protected static string | \BackedEnum | null $navigationIcon = Heroicon::Newspaper;
+    protected static string|\BackedEnum|null $navigationIcon = Heroicon::Newspaper;
 
     protected static ?string $recordTitleAttribute = 'title';
 
@@ -98,11 +98,15 @@ class NewsResource extends Resource
                                     if (! isset($state['type'])) {
                                         return implode('', array_map(function ($p) {
                                             $p = trim((string) $p);
-                                            if ($p === '') return '';
+                                            if ($p === '') {
+                                                return '';
+                                            }
+
                                             return str_starts_with($p, '<') ? $p : "<p>{$p}</p>";
                                         }, $state));
                                     }
                                 }
+
                                 return $state;
                             })
                             ->dehydrateStateUsing(function ($state) {
@@ -113,11 +117,14 @@ class NewsResource extends Resource
                                     preg_match_all('/<p>(.*?)<\/p>/is', $state, $matches);
                                     if (! empty($matches[1])) {
                                         $paragraphs = array_map(fn ($p) => trim(strip_tags($p)), $matches[1]);
+
                                         return array_values(array_filter($paragraphs, fn ($p) => $p !== ''));
                                     }
                                     $lines = array_map('trim', explode("\n", strip_tags($state)));
+
                                     return array_values(array_filter($lines, fn ($l) => $l !== ''));
                                 }
+
                                 return $state;
                             })
                             ->toolbarButtons([
@@ -164,7 +171,7 @@ class NewsResource extends Resource
                             ->label('URL джерела')
                             ->url()
                             ->visible(fn (Forms\Get $get) => $get('source') === 'RSS')
-                            ->dehydrated(fn ($state) => !empty($state))
+                            ->dehydrated(fn ($state) => ! empty($state))
                             ->columnSpan(1),
 
                         Forms\Components\Toggle::make('is_published')

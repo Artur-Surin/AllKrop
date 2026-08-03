@@ -6,13 +6,13 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\LandmarkResource\Pages;
 use App\Models\Landmark;
-use Filament\Forms;
-use Filament\Schemas\Schema;
-use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Actions;
-use Filament\Tables\Table;
+use Filament\Forms;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables;
+use Filament\Tables\Table;
 
 class LandmarkResource extends Resource
 {
@@ -22,9 +22,9 @@ class LandmarkResource extends Resource
 
     protected static ?string $pluralModelLabel = "Пам'ятки";
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Контент';
+    protected static string|\UnitEnum|null $navigationGroup = 'Контент';
 
-    protected static string | \BackedEnum | null $navigationIcon = Heroicon::BuildingLibrary;
+    protected static string|\BackedEnum|null $navigationIcon = Heroicon::BuildingLibrary;
 
     protected static ?string $recordTitleAttribute = 'title';
 
@@ -63,11 +63,15 @@ class LandmarkResource extends Resource
                                     if (! isset($state['type'])) {
                                         return implode('', array_map(function ($p) {
                                             $p = trim((string) $p);
-                                            if ($p === '') return '';
+                                            if ($p === '') {
+                                                return '';
+                                            }
+
                                             return str_starts_with($p, '<') ? $p : "<p>{$p}</p>";
                                         }, $state));
                                     }
                                 }
+
                                 return $state;
                             })
                             ->dehydrateStateUsing(function ($state) {
@@ -78,11 +82,14 @@ class LandmarkResource extends Resource
                                     preg_match_all('/<p>(.*?)<\/p>/is', $state, $matches);
                                     if (! empty($matches[1])) {
                                         $paragraphs = array_map(fn ($p) => trim(strip_tags($p)), $matches[1]);
+
                                         return array_values(array_filter($paragraphs, fn ($p) => $p !== ''));
                                     }
                                     $lines = array_map('trim', explode("\n", strip_tags($state)));
+
                                     return array_values(array_filter($lines, fn ($l) => $l !== ''));
                                 }
+
                                 return $state;
                             })
                             ->columnSpanFull(),

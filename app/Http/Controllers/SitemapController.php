@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Models\News;
 use App\Models\Event;
-use App\Models\Place;
 use App\Models\Landmark;
+use App\Models\News;
+use App\Models\Place;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 
@@ -24,17 +24,17 @@ class SitemapController extends Controller
             $staticPages = ['/', '/news', '/events', '/places', '/city', '/transport', '/services', '/contacts'];
             foreach ($staticPages as $page) {
                 $xml .= '<url>';
-                $xml .= '<loc>' . $url . $page . '</loc>';
+                $xml .= '<loc>'.$url.$page.'</loc>';
                 $xml .= '<changefreq>weekly</changefreq>';
-                $xml .= '<priority>' . ($page === '/' ? '1.0' : '0.8') . '</priority>';
+                $xml .= '<priority>'.($page === '/' ? '1.0' : '0.8').'</priority>';
                 $xml .= '</url>';
             }
 
             // News
             foreach (News::select('slug', 'updated_at')->get() as $n) {
                 $xml .= '<url>';
-                $xml .= '<loc>' . $url . '/news/' . $n->slug . '</loc>';
-                $xml .= '<lastmod>' . $n->updated_at->format('Y-m-d') . '</lastmod>';
+                $xml .= '<loc>'.$url.'/news/'.$n->slug.'</loc>';
+                $xml .= '<lastmod>'.$n->updated_at->format('Y-m-d').'</lastmod>';
                 $xml .= '<changefreq>weekly</changefreq>';
                 $xml .= '<priority>0.8</priority>';
                 $xml .= '</url>';
@@ -43,8 +43,8 @@ class SitemapController extends Controller
             // Events
             foreach (Event::select('slug', 'updated_at')->get() as $e) {
                 $xml .= '<url>';
-                $xml .= '<loc>' . $url . '/events/' . $e->slug . '</loc>';
-                $xml .= '<lastmod>' . $e->updated_at->format('Y-m-d') . '</lastmod>';
+                $xml .= '<loc>'.$url.'/events/'.$e->slug.'</loc>';
+                $xml .= '<lastmod>'.$e->updated_at->format('Y-m-d').'</lastmod>';
                 $xml .= '<changefreq>weekly</changefreq>';
                 $xml .= '<priority>0.8</priority>';
                 $xml .= '</url>';
@@ -53,8 +53,8 @@ class SitemapController extends Controller
             // Places
             foreach (Place::select('slug', 'updated_at')->get() as $p) {
                 $xml .= '<url>';
-                $xml .= '<loc>' . $url . '/places/' . $p->slug . '</loc>';
-                $xml .= '<lastmod>' . $p->updated_at->format('Y-m-d') . '</lastmod>';
+                $xml .= '<loc>'.$url.'/places/'.$p->slug.'</loc>';
+                $xml .= '<lastmod>'.$p->updated_at->format('Y-m-d').'</lastmod>';
                 $xml .= '<changefreq>monthly</changefreq>';
                 $xml .= '<priority>0.7</priority>';
                 $xml .= '</url>';
@@ -63,14 +63,15 @@ class SitemapController extends Controller
             // Landmarks
             foreach (Landmark::select('slug', 'updated_at')->get() as $l) {
                 $xml .= '<url>';
-                $xml .= '<loc>' . $url . '/city/' . $l->slug . '</loc>';
-                $xml .= '<lastmod>' . $l->updated_at->format('Y-m-d') . '</lastmod>';
+                $xml .= '<loc>'.$url.'/city/'.$l->slug.'</loc>';
+                $xml .= '<lastmod>'.$l->updated_at->format('Y-m-d').'</lastmod>';
                 $xml .= '<changefreq>monthly</changefreq>';
                 $xml .= '<priority>0.6</priority>';
                 $xml .= '</url>';
             }
 
             $xml .= '</urlset>';
+
             return $xml;
         });
 

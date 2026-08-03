@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Models\News;
 use App\Models\Event;
-use App\Models\Place;
 use App\Models\Landmark;
+use App\Models\News;
+use App\Models\Place;
 use App\Models\PlaceCategory;
 use App\Services\ContentService;
 use Illuminate\View\View;

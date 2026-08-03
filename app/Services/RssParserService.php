@@ -19,6 +19,7 @@ class RssParserService
 
             if ($response->failed()) {
                 Log::warning("RSS feed fetch failed: {$url}", ['status' => $response->status()]);
+
                 return null;
             }
 
@@ -26,12 +27,14 @@ class RssParserService
 
             if ($xml === false) {
                 Log::warning("RSS feed XML parse failed: {$url}");
+
                 return null;
             }
 
             return $xml;
         } catch (\Exception $e) {
             Log::error("RSS feed error: {$url}", ['message' => $e->getMessage()]);
+
             return null;
         }
     }
@@ -58,16 +61,16 @@ class RssParserService
 
             $image = $this->extractImage($item) ?: config('rss.default_image', '/images/hero-city.png');
 
-            $fullText = $title . ' ' . $excerpt;
+            $fullText = $title.' '.$excerpt;
 
-            if (!$this->isRelatedToCity($fullText)) {
+            if (! $this->isRelatedToCity($fullText)) {
                 continue;
             }
 
             $items[] = [
                 'title' => $title,
                 'slug' => $this->generateSlug($title),
-                'tag' => $this->detectTag($title . ' ' . $excerpt),
+                'tag' => $this->detectTag($title.' '.$excerpt),
                 'excerpt' => mb_substr($excerpt, 0, 300),
                 'date' => $date,
                 'read_time' => $this->estimateReadTime($excerpt),
@@ -103,16 +106,16 @@ class RssParserService
 
             $image = $this->extractImage($item) ?: config('rss.default_image', '/images/hero-city.png');
 
-            $fullText = $title . ' ' . $excerpt;
+            $fullText = $title.' '.$excerpt;
 
-            if (!$this->isRelatedToCity($fullText)) {
+            if (! $this->isRelatedToCity($fullText)) {
                 continue;
             }
 
             $items[] = [
                 'title' => $title,
                 'slug' => $this->generateSlug($title),
-                'category' => $this->detectEventCategory($title . ' ' . $excerpt),
+                'category' => $this->detectEventCategory($title.' '.$excerpt),
                 'date' => $date,
                 'time' => $this->extractTime($excerpt),
                 'place' => $this->extractPlace($excerpt),
@@ -132,6 +135,7 @@ class RssParserService
         $text = strip_tags($html);
         $text = html_entity_decode($text, ENT_QUOTES, 'UTF-8');
         $text = preg_replace('/\s+/', ' ', $text);
+
         return trim($text);
     }
 
@@ -141,7 +145,8 @@ class RssParserService
         $slug = preg_replace('/[^a-z0-9\-]/', '-', $slug);
         $slug = preg_replace('/-+/', '-', $slug);
         $slug = trim($slug, '-');
-        return $slug ?: 'item-' . time();
+
+        return $slug ?: 'item-'.time();
     }
 
     private function formatDate(string $rawDate): string
@@ -163,6 +168,7 @@ class RssParserService
 
         $day = date('j', $timestamp);
         $month = $months[(int) date('n', $timestamp)];
+
         return "{$day} {$month}";
     }
 
@@ -201,6 +207,7 @@ class RssParserService
         $clean = $this->sanitizeContent($html);
         $paragraphs = preg_split('/\n\s*\n/', $clean);
         $body = array_filter(array_map('trim', $paragraphs));
+
         return array_values($body) ?: [$clean ?: ''];
     }
 
@@ -256,6 +263,7 @@ class RssParserService
         if (preg_match('/(\d{1,2}[:.]\d{2})/', $text, $matches)) {
             return str_replace('.', ':', $matches[1]);
         }
+
         return '00:00';
     }
 
@@ -292,6 +300,7 @@ class RssParserService
         if (preg_match('/вхід вільний/i', $text)) {
             return 'Безкоштовно';
         }
+
         return 'Безкоштовно';
     }
 
@@ -299,6 +308,7 @@ class RssParserService
     {
         $wordCount = str_word_count($text);
         $minutes = max(1, (int) ceil($wordCount / 200));
+
         return "{$minutes} хв";
     }
 

@@ -4,19 +4,20 @@ declare(strict_types=1);
 
 namespace App\Filament\Pages;
 
-use App\Models\News;
 use App\Models\Event;
+use App\Models\News;
 use App\Models\RssImportLog;
-use Illuminate\Support\Facades\Artisan;
-use Filament\Pages\Page;
 use Filament\Notifications\Notification;
+use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Artisan;
 
 class RssImport extends Page
 {
-    protected static string | \BackedEnum | null $navigationIcon = Heroicon::Signal;
+    protected static string|\BackedEnum|null $navigationIcon = Heroicon::Signal;
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Контент';
+    protected static string|\UnitEnum|null $navigationGroup = 'Контент';
 
     protected static ?string $navigationLabel = 'RSS Імпорт';
 
@@ -31,7 +32,7 @@ class RssImport extends Page
         return config('rss.feeds', []);
     }
 
-    public function getImportLogs(): \Illuminate\Support\Collection
+    public function getImportLogs(): Collection
     {
         return RssImportLog::latest()->take(20)->get();
     }

@@ -30,7 +30,7 @@ class TransportController extends Controller
             }
         }
 
-        if (!$route) {
+        if (! $route) {
             abort(404);
         }
 

@@ -15,14 +15,12 @@ class ContactRequestSubmitted extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public function __construct(public ContactRequest $contactRequest)
-    {
-    }
+    public function __construct(public ContactRequest $contactRequest) {}
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Нове звернення з сайту: ' . $this->contactRequest->subject_label,
+            subject: 'Нове звернення з сайту: '.$this->contactRequest->subject_label,
         );
     }
 

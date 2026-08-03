@@ -6,13 +6,13 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PlaceCategoryResource\Pages;
 use App\Models\PlaceCategory;
-use Filament\Forms;
-use Filament\Schemas\Schema;
-use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Actions;
-use Filament\Tables\Table;
+use Filament\Forms;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables;
+use Filament\Tables\Table;
 
 class PlaceCategoryResource extends Resource
 {
@@ -22,9 +22,9 @@ class PlaceCategoryResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Категорії';
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Заклади';
+    protected static string|\UnitEnum|null $navigationGroup = 'Заклади';
 
-    protected static string | \BackedEnum | null $navigationIcon = Heroicon::FolderOpen;
+    protected static string|\BackedEnum|null $navigationIcon = Heroicon::FolderOpen;
 
     protected static ?string $recordTitleAttribute = 'label';
 

@@ -22,7 +22,7 @@ class ServiceController extends Controller
     {
         $service = ContentService::getServiceBySlug($slug);
 
-        if (!$service) {
+        if (! $service) {
             abort(404);
         }
 

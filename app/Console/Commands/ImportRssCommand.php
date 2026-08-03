@@ -13,10 +13,13 @@ use Illuminate\Console\Command;
 class ImportRssCommand extends Command
 {
     protected $signature = 'rss:import {--feed=} {--type=}';
+
     protected $description = 'Import news and events from RSS feeds';
 
     private int $imported = 0;
+
     private int $skipped = 0;
+
     private int $errors = 0;
 
     public function handle(RssParserService $parser): int
@@ -61,10 +64,11 @@ class ImportRssCommand extends Command
             'status' => 'success',
         ]);
 
-        if (!$xml) {
+        if (! $xml) {
             $log->update(['status' => 'error', 'error_message' => 'Failed to fetch or parse feed']);
             $this->error("  Failed to fetch: {$feed['url']}");
             $this->errors++;
+
             return;
         }
 
@@ -75,7 +79,7 @@ class ImportRssCommand extends Command
         };
 
         $log->update(['items_found' => count($items)]);
-        $this->line("  Found " . count($items) . " items");
+        $this->line('  Found '.count($items).' items');
 
         foreach ($items as $item) {
             $this->importItem($type, $item);
@@ -95,6 +99,7 @@ class ImportRssCommand extends Command
         if ($existing) {
             $this->skipped++;
             $this->line("  Skip: {$item['title']} (duplicate)");
+
             return;
         }
 

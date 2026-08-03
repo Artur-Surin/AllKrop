@@ -6,13 +6,13 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ServiceGroupResource\Pages;
 use App\Models\ServiceGroup;
-use Filament\Forms;
-use Filament\Schemas\Schema;
-use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Actions;
-use Filament\Tables\Table;
+use Filament\Forms;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables;
+use Filament\Tables\Table;
 
 class ServiceGroupResource extends Resource
 {
@@ -22,9 +22,9 @@ class ServiceGroupResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Групи послуг';
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Послуги';
+    protected static string|\UnitEnum|null $navigationGroup = 'Послуги';
 
-    protected static string | \BackedEnum | null $navigationIcon = Heroicon::Cog;
+    protected static string|\BackedEnum|null $navigationIcon = Heroicon::Cog;
 
     protected static ?string $recordTitleAttribute = 'category';
 

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Models\News as NewsModel;
 use App\Models\Event as EventModel;
+use App\Models\News as NewsModel;
 use Illuminate\Support\Facades\Cache;
 
 class ContentService
@@ -153,7 +153,7 @@ class ContentService
         $slugs = [];
         $unique = [];
         foreach ($all as $item) {
-            if (!in_array($item['slug'], $slugs)) {
+            if (! in_array($item['slug'], $slugs)) {
                 $slugs[] = $item['slug'];
                 $unique[] = $item;
             }
@@ -182,8 +182,11 @@ class ContentService
 
         $all = static::news();
         foreach ($all as $item) {
-            if ($item['slug'] === $slug) return $item;
+            if ($item['slug'] === $slug) {
+                return $item;
+            }
         }
+
         return null;
     }
 
@@ -309,7 +312,7 @@ class ContentService
         $slugs = [];
         $unique = [];
         foreach ($all as $item) {
-            if (!in_array($item['slug'], $slugs)) {
+            if (! in_array($item['slug'], $slugs)) {
                 $slugs[] = $item['slug'];
                 $unique[] = $item;
             }
@@ -339,8 +342,11 @@ class ContentService
 
         $all = static::events();
         foreach ($all as $e) {
-            if ($e['slug'] === $slug) return $e;
+            if ($e['slug'] === $slug) {
+                return $e;
+            }
         }
+
         return null;
     }
 
@@ -363,14 +369,17 @@ class ContentService
     public static function getCategory(string $key): ?array
     {
         foreach (static::enterpriseCategories() as $cat) {
-            if ($cat['key'] === $key) return $cat;
+            if ($cat['key'] === $key) {
+                return $cat;
+            }
         }
+
         return null;
     }
 
     public static function categoryCount(string $key): int
     {
-        return count(array_filter(static::places(), fn($p) => $p['categoryKey'] === $key));
+        return count(array_filter(static::places(), fn ($p) => $p['categoryKey'] === $key));
     }
 
     public static function places(): array
@@ -400,14 +409,17 @@ class ContentService
     public static function getPlace(string $slug): ?array
     {
         foreach (static::places() as $p) {
-            if ($p['slug'] === $slug) return $p;
+            if ($p['slug'] === $slug) {
+                return $p;
+            }
         }
+
         return null;
     }
 
     public static function getPlacesByCategory(string $key): array
     {
-        return array_filter(static::places(), fn($p) => $p['categoryKey'] === $key);
+        return array_filter(static::places(), fn ($p) => $p['categoryKey'] === $key);
     }
 
     public static function landmarks(): array
@@ -531,8 +543,11 @@ class ContentService
     public static function getLandmark(string $slug): ?array
     {
         foreach (static::landmarks() as $l) {
-            if ($l['slug'] === $slug) return $l;
+            if ($l['slug'] === $slug) {
+                return $l;
+            }
         }
+
         return null;
     }
 
@@ -779,10 +794,12 @@ class ContentService
             foreach ($group['items'] as $item) {
                 if ($item['slug'] === $slug) {
                     $item['group_category'] = $group['category'];
+
                     return $item;
                 }
             }
         }
+
         return null;
     }
 

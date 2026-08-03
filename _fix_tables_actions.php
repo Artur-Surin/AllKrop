@@ -1,6 +1,6 @@
 <?php
 
-$files = glob(__DIR__ . '/app/Filament/Resources/*.php');
+$files = glob(__DIR__.'/app/Filament/Resources/*.php');
 
 foreach ($files as $file) {
     $content = file_get_contents($file);
@@ -23,5 +23,5 @@ foreach ($files as $file) {
     $content = str_replace('Tables\\Actions\\', 'Actions\\', $content);
 
     file_put_contents($file, $content);
-    echo "Fixed: " . basename($file) . "\n";
+    echo 'Fixed: '.basename($file)."\n";
 }

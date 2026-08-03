@@ -7,13 +7,13 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ReviewResource\Pages;
 use App\Models\Review;
 use BackedEnum;
-use Filament\Forms;
-use Filament\Schemas\Schema;
-use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Actions;
-use Filament\Tables\Table;
+use Filament\Forms;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables;
+use Filament\Tables\Table;
 
 class ReviewResource extends Resource
 {
@@ -30,33 +30,33 @@ class ReviewResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->schema([
-                Forms\Components\Select::make('place_id')
-                    ->label('Заклад')
-                    ->relationship('place', 'name')
-                    ->searchable()
-                    ->preload()
-                    ->required(),
-                Forms\Components\TextInput::make('name')
-                    ->label("Ім'я")
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Select::make('rating')
-                    ->label('Оцінка')
-                    ->options([
-                        1 => '1 ⭐',
-                        2 => '2 ⭐⭐',
-                        3 => '3 ⭐⭐⭐',
-                        4 => '4 ⭐⭐⭐⭐',
-                        5 => '5 ⭐⭐⭐⭐⭐',
-                    ])
-                    ->required(),
-                Forms\Components\Textarea::make('comment')
-                    ->label('Коментар')
-                    ->rows(4)
-                    ->required(),
-                Forms\Components\Toggle::make('is_approved')
-                    ->label('Схвалено')
-                    ->default(false),
+            Forms\Components\Select::make('place_id')
+                ->label('Заклад')
+                ->relationship('place', 'name')
+                ->searchable()
+                ->preload()
+                ->required(),
+            Forms\Components\TextInput::make('name')
+                ->label("Ім'я")
+                ->required()
+                ->maxLength(255),
+            Forms\Components\Select::make('rating')
+                ->label('Оцінка')
+                ->options([
+                    1 => '1 ⭐',
+                    2 => '2 ⭐⭐',
+                    3 => '3 ⭐⭐⭐',
+                    4 => '4 ⭐⭐⭐⭐',
+                    5 => '5 ⭐⭐⭐⭐⭐',
+                ])
+                ->required(),
+            Forms\Components\Textarea::make('comment')
+                ->label('Коментар')
+                ->rows(4)
+                ->required(),
+            Forms\Components\Toggle::make('is_approved')
+                ->label('Схвалено')
+                ->default(false),
         ]);
     }
 

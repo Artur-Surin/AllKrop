@@ -1,0 +1,45 @@
+#!/bin/sh
+
+echo "--------------------------------------------------------"
+echo "🔍 Git Pre-commit: Перевірка синтаксису PHP та Pint..."
+echo "--------------------------------------------------------"
+
+# Автоматичне визначення шляху до PHP у Laragon / Windows
+PHP_BIN="php"
+if [ -f "/y/laragon/bin/php/php-8.3.18-nts-Win32-vs16-x64/php.exe" ]; then
+    PHP_BIN="/y/laragon/bin/php/php-8.3.18-nts-Win32-vs16-x64/php.exe"
+    export PATH="/y/laragon/bin/php/php-8.3.18-nts-Win32-vs16-x64:$PATH"
+elif [ -f "C:/laragon/bin/php/php-8.3.18-nts-Win32-vs16-x64/php.exe" ]; then
+    PHP_BIN="C:/laragon/bin/php/php-8.3.18-nts-Win32-vs16-x64/php.exe"
+    export PATH="C:/laragon/bin/php/php-8.3.18-nts-Win32-vs16-x64:$PATH"
+fi
+
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.php$')
+
+if [ -n "$STAGED_FILES" ]; then
+    echo "📄 Перевірка синтаксису PHP зафайлених змін..."
+    for FILE in $STAGED_FILES; do
+        FILE=$(echo "$FILE" | tr -d '\r\n')
+        if [ -n "$FILE" ] && [ -f "$FILE" ]; then
+            WIN_FILE=$(cygpath -w "$FILE" 2>/dev/null || echo "$FILE")
+            "$PHP_BIN" -l "$WIN_FILE" > /dev/null 2>&1
+            if [ $? -ne 0 ]; then
+                echo "❌ Помилка синтаксису PHP у файлі: $FILE"
+                exit 1
+            fi
+        fi
+    done
+    echo "✅ Синтаксис PHP у порядку."
+
+    echo "🎨 Перевірка форматування коду через Laravel Pint..."
+    "$PHP_BIN" ./vendor/bin/pint --test
+    if [ $? -ne 0 ]; then
+        echo "❌ Код не відповідає стандартам Laravel Pint!"
+        echo "💡 Запустіть './vendor/bin/pint' для автоматичного виправлення та повторіть коміт."
+        exit 1
+    fi
+    echo "✅ Стандарти коду Pint дотримані."
+fi
+
+echo "🚀 Усі перевірки успішно пройдено!"
+exit 0

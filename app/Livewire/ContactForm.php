@@ -33,9 +33,10 @@ class ContactForm extends Component
     public function submit(): void
     {
         // Honeypot check
-        if (!empty($this->website)) {
+        if (! empty($this->website)) {
             // Quietly ignore bot submission
             $this->submitted = true;
+
             return;
         }
 
@@ -55,7 +56,7 @@ class ContactForm extends Component
             $recipient = config('mail.from.address', 'hello@kropyvnytskyi.city');
             Mail::to($recipient)->send(new ContactRequestSubmitted($contactRequest));
         } catch (\Throwable $e) {
-            Log::error('Failed to send contact request email: ' . $e->getMessage());
+            Log::error('Failed to send contact request email: '.$e->getMessage());
         }
 
         $this->reset(['name', 'email', 'message', 'website']);

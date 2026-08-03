@@ -13,9 +13,10 @@ $files = [
 ];
 
 foreach ($files as $file) {
-    $path = __DIR__ . '/' . $file;
-    if (!file_exists($path)) {
+    $path = __DIR__.'/'.$file;
+    if (! file_exists($path)) {
         echo "Not found: $file\n";
+
         continue;
     }
 
