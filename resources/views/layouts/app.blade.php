@@ -11,6 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @livewireStyles
     <style>
         :root {
             --font-sans: 'Manrope', sans-serif;
@@ -114,6 +115,43 @@
             </nav>
 
             <div class="flex items-center gap-2">
+                <a href="{{ route('places.create') }}" class="hidden items-center gap-1.5 rounded-full bg-primary px-3.5 py-1.5 text-xs font-semibold text-primary-foreground shadow transition hover:bg-primary/90 sm:flex">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    Додати заклад
+                </a>
+
+                @auth
+                    <div class="group relative">
+                        <button class="flex h-9 items-center gap-2 rounded-full border border-border bg-secondary/60 px-3 text-xs font-medium text-foreground transition-colors hover:bg-secondary">
+                            <span class="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+                                {{ mb_substr(auth()->user()->name, 0, 1) }}
+                            </span>
+                            <span class="hidden max-w-[100px] truncate md:inline">{{ auth()->user()->name }}</span>
+                        </button>
+                        <div class="invisible absolute right-0 top-full z-50 mt-2 w-52 rounded-2xl border border-border bg-background/95 p-1.5 shadow-xl backdrop-blur-xl opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100">
+                            <a href="{{ route('places.create') }}" class="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-foreground hover:bg-secondary">
+                                <svg class="h-4 w-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                Додати новий заклад
+                            </a>
+                            <a href="{{ route('my.places') }}" class="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-foreground hover:bg-secondary">
+                                <svg class="h-4 w-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                                Мої заклади
+                            </a>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-destructive hover:bg-destructive/10">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                                    Вийти з акаунту
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                @else
+                    <a href="{{ route('login') }}" class="rounded-full px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-secondary hover:text-foreground">
+                        Увійти
+                    </a>
+                @endauth
+
                 <a href="/search" aria-label="Пошук" class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
                 </a>
@@ -145,6 +183,7 @@
     </header>
 
     <main id="main-content">
+        {{ $slot ?? '' }}
         @yield('content')
     </main>
 
@@ -239,5 +278,6 @@
     </script>
 
     @yield('scripts')
+    @livewireScripts
 </body>
 </html>

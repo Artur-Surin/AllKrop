@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\EventController;
@@ -13,9 +14,29 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\TransportController;
+use App\Livewire\Places\CreatePlaceComponent;
+use App\Livewire\Places\EditPlaceComponent;
+use App\Livewire\Places\UserPlacesComponent;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// Авторизація користувачів
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [AuthController::class, 'register']);
+});
+
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+
+// Кабінет та додавання закладів
+Route::middleware('auth')->group(function () {
+    Route::get('/places/add', CreatePlaceComponent::class)->name('places.create');
+    Route::get('/places/{place}/edit', EditPlaceComponent::class)->name('places.edit');
+    Route::get('/my/places', UserPlacesComponent::class)->name('my.places');
+});
 
 Route::get('/search', [SearchController::class, 'index'])->name('search');
 

@@ -66,9 +66,22 @@ class PlaceResource extends Resource
                     ->maxFiles(20)
                     ->columnSpanFull(),
 
+                Forms\Components\Select::make('user_id')
+                    ->label('Автор (Користувач)')
+                    ->relationship('user', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->nullable(),
+
                 Forms\Components\Toggle::make('is_published')
                     ->label('Опубліковано')
                     ->default(true),
+
+                Forms\Components\Textarea::make('rejection_reason')
+                    ->label('Причина відхилення (якщо не відповідає правилам)')
+                    ->rows(2)
+                    ->nullable()
+                    ->columnSpanFull(),
 
                 Forms\Components\Select::make('category_id')
                     ->label('Категорія')
@@ -154,8 +167,9 @@ class PlaceResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('slug')
-                    ->searchable()
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('Автор')
+                    ->placeholder('Адмін')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('category.label')
@@ -187,6 +201,12 @@ class PlaceResource extends Resource
                     ->label('Статус публікації'),
             ])
             ->actions([
+                Actions\Action::make('publish')
+                    ->label('Опублікувати')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->action(fn (Place $record) => $record->update(['is_published' => true, 'rejection_reason' => null]))
+                    ->visible(fn (Place $record): bool => ! $record->is_published),
                 Actions\EditAction::make(),
                 Actions\DeleteAction::make(),
             ])

@@ -13,7 +13,23 @@ class Place extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['slug', 'image', 'gallery', 'name', 'category_id', 'rating', 'area', 'address', 'hours', 'phone', 'description', 'features', 'is_published'];
+    protected $fillable = [
+        'user_id',
+        'slug',
+        'image',
+        'gallery',
+        'name',
+        'category_id',
+        'rating',
+        'area',
+        'address',
+        'hours',
+        'phone',
+        'description',
+        'features',
+        'is_published',
+        'rejection_reason',
+    ];
 
     public function getRouteKeyName(): string
     {
@@ -26,6 +42,11 @@ class Place extends Model
         'gallery' => 'array',
         'is_published' => 'boolean',
     ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function getGalleryUrlsAttribute(): array
     {
